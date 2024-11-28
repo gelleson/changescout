@@ -31,10 +31,12 @@ jobs:
 
       - uses: extractions/setup-just@v2
         name: Install just
-      - name: Run just gen
-        run: just ci deps && just gen gql
+      - name: Install dependencies
+        run: just ci deps
       - name: Generate code
         run: go generate ./...
+      - name: Generate GraphQL code
+        run: just gen gql
       - name: Run tests
         run: just ci tests
       - name: Upload coverage to Codecov
