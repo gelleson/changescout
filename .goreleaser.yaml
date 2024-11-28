@@ -11,8 +11,6 @@ version: 2
 before:
   hooks:
     # you may remove this if you don't need go generate
-    - go generate ./...
-    # you may remove this if you don't need go generate
     - go run -mod=mod github.com/99designs/gqlgen gen
 
 builds:
