@@ -6,6 +6,7 @@ package gql
 
 import (
 	"context"
+
 	"github.com/gelleson/changescout/changescout/internal/api/gql/model"
 	"github.com/gelleson/changescout/changescout/internal/domain"
 	"github.com/gelleson/changescout/changescout/internal/pkg/contexts"
