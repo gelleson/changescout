@@ -4,4 +4,3 @@
 *.db
 
 **/generated/*
-**/ent/ent/*
