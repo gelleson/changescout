@@ -10,7 +10,7 @@ on:
       - main
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -42,7 +42,7 @@ jobs:
         run: go run -mod=mod github.com/99designs/gqlgen gen
 
       - name: Run tests
-        run: go test ./...
+        run: go test -v ./...
 
       - name: Build application (optional, for deployment)
         run: CGO_ENABLED=0 GOOS=linux go build -a -o main .
