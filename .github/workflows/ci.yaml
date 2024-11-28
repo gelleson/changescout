@@ -4,7 +4,7 @@ on:
   pull_request:
     branches:
       - main
-    types: [opened, synchronize, reopened]
+    types: [ opened, synchronize, reopened ]
   push:
     branches:
       - main
@@ -29,21 +29,20 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
 
+      - uses: extractions/setup-just@v2
+        name: Install just
       - name: Install dependencies
-        run: go mod download
-
-      - name: install mockery
-        run: go install github.com/vektra/mockery/v2@v2.49.1
-
+        run: |
+          go install github.com/vektra/mockery/v2@v2.49.1
+          go install github.com/nikolaydubina/go-cover-treemap@latest
+          go mod download
       - name: Generate code
         run: go generate ./...
-
-      - name: GQL GEN
-        run: go run -mod=mod github.com/99designs/gqlgen gen
-
+      - name: Generate GraphQL code
+        run: just gen gql
       - name: Run tests
-        run: go test -v ./...
-
-      - name: Build application (optional, for deployment)
-        run: CGO_ENABLED=0 GOOS=linux go build -a -o main .
-
+        run: just ci tests
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
