@@ -13,6 +13,8 @@ RUN go mod download
 # Copy the rest of the application code into the container
 COPY . .
 
+RUN go run -mod=mod github.com/99designs/gqlgen gen
+
 # Build the application
 RUN CGO_ENABLED=0 GOOS=linux go build -a -o main .
 
