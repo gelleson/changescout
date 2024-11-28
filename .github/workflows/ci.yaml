@@ -44,11 +44,6 @@ jobs:
       - name: Run tests
         run: go test ./...
 
-      - name: Run linters (optional)
-        run: |
-          go install golang.org/x/lint/golint@latest
-          golint ./...
-
       - name: Build application (optional, for deployment)
         run: CGO_ENABLED=0 GOOS=linux go build -a -o main .
 
