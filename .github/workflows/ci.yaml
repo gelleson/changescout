@@ -32,6 +32,12 @@ jobs:
       - name: Install dependencies
         run: go mod download
 
+      - name: Generate code
+        run: go generate ./...
+
+      - name: GQL GEN
+        run: go run -mod=mod github.com/99designs/gqlgen gen
+
       - name: Run tests
         run: go test ./...
 
