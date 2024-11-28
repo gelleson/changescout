@@ -1,0 +1,16 @@
+version: "3"
+
+services:
+  changescout:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3311:3311"
+    env_file:
+      - .env
+    volumes:
+      - changescout-db:/app/app.db
+
+volumes:
+  changescout-db:
