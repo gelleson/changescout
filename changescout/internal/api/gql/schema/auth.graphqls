@@ -1,0 +1,20 @@
+extend type Mutation {
+    signInByPassword(input: AuthSignInByPasswordInput): AuthStatus
+    signUpByPassword(input: AuthSignUpByPasswordInput): AuthStatus
+}
+
+input AuthSignUpByPasswordInput {
+    firstName: String!
+    lastName: String!
+    email: String!
+    password: String!
+}
+
+input AuthSignInByPasswordInput {
+    email: String!
+    password: String!
+}
+
+type AuthStatus {
+    success: Boolean
+}

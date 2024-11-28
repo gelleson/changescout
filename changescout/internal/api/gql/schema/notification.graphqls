@@ -1,0 +1,47 @@
+enum NotificationType {
+    telegram
+}
+
+
+type Notification {
+    id: ID!
+    name: String!
+    type: NotificationType!
+    websiteId: ID
+    createdAt: Time!
+    updatedAt: Time!
+}
+
+input NotificationCreateInput {
+    name: String!
+    type: NotificationType!
+    token: String
+    destination: String
+    websiteId: ID
+}
+
+input NotificationUpdateInput {
+    id: ID!
+    name: String!
+    type: NotificationType!
+    token: String
+    destination: String
+    websiteId: ID
+}
+
+extend type Mutation {
+    createNotification(input: NotificationCreateInput!): Notification! @isAuthenticated
+    updateNotification(input: NotificationUpdateInput!): Notification! @isAuthenticated
+    deleteNotification(id: ID!): Notification! @isAuthenticated
+}
+
+extend type Query {
+    getNotification(id: ID!): Notification! @isAuthenticated
+    getNotifications(input: NotificationFilters): [Notification!]! @isAuthenticated
+}
+
+input NotificationFilters {
+    websiteId: ID
+    fromDate: Time
+    toDate: Time
+}

@@ -1,0 +1,40 @@
+schema:
+  - changescout/internal/api/gql/schema/*.graphqls
+
+exec:
+  filename: changescout/internal/api/gql/generated.go
+  package: generated
+  layout: follow-schema
+  dir: changescout/internal/api/gql/generated
+  worker_limit: 1000
+
+model:
+  filename: changescout/internal/api/gql/model/models_gen.go
+  package: model
+
+resolver:
+  dir: changescout/internal/api/gql  # Create a separate resolvers directory
+  layout: follow-schema  # Changed from single-file to follow-schema
+  package: gql
+
+
+autobind:
+  - github.com/gelleson/changescout/changescout/internal/domain  # Updated this line
+
+models:
+  ID:
+    model:
+      - github.com/99designs/gqlgen/graphql.UUID
+  Int:
+    model:
+      - github.com/99designs/gqlgen/graphql.Int
+      - github.com/99designs/gqlgen/graphql.Int64
+      - github.com/99designs/gqlgen/graphql.Int32
+
+  Duration:
+    model:
+      - github.com/99designs/gqlgen/graphql.Duration
+
+  CronExpression:
+    model:
+      - github.com/gelleson/changescout/changescout/pkg/crons.CronExpression

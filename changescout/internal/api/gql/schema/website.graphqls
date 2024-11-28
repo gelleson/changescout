@@ -1,0 +1,79 @@
+scalar UUID
+scalar CronExpression
+scalar Time
+type Setting {
+    user_agent: String
+    referer: String
+    method: String
+    deduplication: Boolean
+    trim: Boolean
+    sort: Boolean
+    selectors: [String!]
+    json_path: [String!]
+}
+type Website {
+    id: ID!
+    url: String!
+    name: String!
+    enabled: Boolean!
+    mode: Mode!
+    next_check_at: Time!
+    cron: CronExpression!
+    setting: Setting
+}
+directive @isAuthenticated on FIELD_DEFINITION
+
+extend type Query {
+    getWebsiteByID(id: ID!): Website @isAuthenticated
+    getWebsiteByURL(url: String!): Website @isAuthenticated
+    getWebsites: [Website!]! @isAuthenticated
+}
+
+extend type Mutation {
+    createWebsite(input: WebsiteCreateInput!): Website! @isAuthenticated
+    updateWebsite(input: WebsiteUpdateInput!): Website! @isAuthenticated
+    changeWebsiteStatus(id: ID!, enabled: Boolean!): Website! @isAuthenticated
+    deleteWebsite(id: ID!): Boolean! @isAuthenticated
+}
+
+enum Method {
+    GET
+    POST
+    PUT
+    DELETE
+    PATCH
+}
+
+input SettingInput {
+    user_agent: String
+    referer: String
+    method: Method!
+    deduplication: Boolean
+    trim: Boolean
+    sort: Boolean
+    selectors: [String!]
+    json_path: [String!]
+}
+
+input WebsiteCreateInput {
+    url: String!
+    name: String!
+    enabled: Boolean!
+    mode: Mode!
+    cron: CronExpression!
+    setting: SettingInput!
+}
+
+enum Mode {
+    plain
+}
+
+input WebsiteUpdateInput {
+    id: ID!
+    name: String
+    url: String
+    enabled: Boolean
+    mode: Mode
+    cron: CronExpression
+    setting: SettingInput
+}

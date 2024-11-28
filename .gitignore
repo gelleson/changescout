@@ -1,0 +1,7 @@
+.idea/
+**/mocks/
+
+*.db
+
+**/generated/*
+**/ent/ent/*
