@@ -29,4 +29,4 @@ COPY --from=builder /app/main ./
 EXPOSE 3311
 
 # Define the entrypoint
-CMD ["./main", "start"]
+ENTRYPOINT ["./main"]
