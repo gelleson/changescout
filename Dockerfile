@@ -4,6 +4,8 @@ FROM golang:1.23-alpine AS builder
 # Set the working directory in the container
 WORKDIR /app
 
+RUN go install github.com/vektra/mockery/v2@v2.49.1
+
 # Copy the go.mod and go.sum files into the container
 COPY go.mod go.sum ./
 
@@ -13,6 +15,7 @@ RUN go mod download
 # Copy the rest of the application code into the container
 COPY . .
 
+RUN go generate ./...
 RUN go run -mod=mod github.com/99designs/gqlgen gen
 
 # Build the application
