@@ -2,7 +2,7 @@
 
 [no-cd]
 [doc("Run all tests with detailed output and generate a coverage profile (coverage.txt)")]
-tests: deps
+tests:
     @go test -v $(go list ./... | grep -v 'ent/ent' | grep -v 'gql/' | grep -v 'mocks/' ) -coverprofile coverage.txt
 
 [no-cd]
