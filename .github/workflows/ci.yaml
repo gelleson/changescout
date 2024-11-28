@@ -32,7 +32,10 @@ jobs:
       - uses: extractions/setup-just@v2
         name: Install just
       - name: Install dependencies
-        run: just ci deps
+        run: |
+          go install github.com/vektra/mockery/v2@v2.49.1
+          go install github.com/nikolaydubina/go-cover-treemap@latest
+          go mod download
       - name: Generate code
         run: go generate ./...
       - name: Generate GraphQL code
