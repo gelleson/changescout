@@ -3,6 +3,8 @@
 
 *.db
 
+.env
+
 **/generated/*
 cover.out
 out.svg
