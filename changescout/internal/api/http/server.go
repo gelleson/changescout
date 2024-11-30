@@ -36,11 +36,9 @@ func (s *Server) WithMiddlewares(middlewares ...echo.MiddlewareFunc) *Server {
 		s.router.Use(
 			middleware.Gzip(),
 			middleware.CORSWithConfig(middleware.CORSConfig{
-				AllowOrigins:                             []string{"*"},
-				AllowMethods:                             []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch},
-				AllowHeaders:                             []string{"Content-Type", "Authorization", "X-Requested-With"},
-				AllowCredentials:                         true,
-				UnsafeWildcardOriginWithAllowCredentials: true,
+				AllowOrigins: []string{"*"},
+				AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch},
+				AllowHeaders: []string{"Content-Type", "Authorization", "X-Requested-With"},
 			}),
 			middleware.Recover(),
 			middleware.RequestID(),
@@ -58,6 +56,8 @@ func (s *Server) Register(method string, pattern string, handler echo.HandlerFun
 }
 
 func (s *Server) Start() error {
+	RegisterHandlers(s.router)
+
 	s.logger.Info("Starting server")
 	return http.ListenAndServe(":3311", s.router)
 }

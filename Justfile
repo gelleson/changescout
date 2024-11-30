@@ -11,3 +11,6 @@ mod dev "./deployments/workflows/dev.justfile"
 
 [doc("Codemerge")]
 mod cm "./deployments/workflows/codemerge.justfile"
+
+[doc("UI")]
+mod ui "./deployments/workflows/ui.justfile"

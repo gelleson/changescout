@@ -1,0 +1,144 @@
+input AuthSignInByPasswordInput {
+  email: String!
+  password: String!
+}
+
+input AuthSignUpByPasswordInput {
+  firstName: String!
+  lastName: String!
+  email: String!
+  password: String!
+}
+
+type AuthStatus {
+  success: Boolean
+  accessToken: String
+  refreshToken: String
+}
+
+scalar CronExpression
+
+enum Method {
+  GET
+  POST
+  PUT
+  DELETE
+  PATCH
+}
+
+enum Mode {
+  plain
+}
+
+type Mutation {
+  signInByPassword(input: AuthSignInByPasswordInput): AuthStatus
+  signUpByPassword(input: AuthSignUpByPasswordInput): AuthStatus
+  createNotification(input: NotificationCreateInput!): Notification!
+  updateNotification(input: NotificationUpdateInput!): Notification!
+  deleteNotification(id: ID!): Notification!
+  createWebsite(input: WebsiteCreateInput!): Website!
+  updateWebsite(input: WebsiteUpdateInput!): Website!
+  changeWebsiteStatus(id: ID!, enabled: Boolean!): Website!
+  deleteWebsite(id: ID!): Boolean!
+}
+
+type Notification {
+  id: ID!
+  name: String!
+  type: NotificationType!
+  websiteId: ID
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+input NotificationCreateInput {
+  name: String!
+  type: NotificationType!
+  token: String
+  destination: String
+  websiteId: ID
+}
+
+input NotificationFilters {
+  websiteId: ID
+  fromDate: Time
+  toDate: Time
+}
+
+enum NotificationType {
+  telegram
+}
+
+input NotificationUpdateInput {
+  id: ID!
+  name: String!
+  type: NotificationType!
+  token: String
+  destination: String
+  websiteId: ID
+}
+
+type Query {
+  getNotification(id: ID!): Notification!
+  getNotifications(input: NotificationFilters): [Notification!]!
+  getWebsiteByID(id: ID!): Website
+  getWebsiteByURL(url: String!): Website
+  getWebsites: [Website!]!
+}
+
+type Setting {
+  user_agent: String
+  referer: String
+  method: String
+  deduplication: Boolean
+  trim: Boolean
+  sort: Boolean
+  selectors: [String!]
+  json_path: [String!]
+}
+
+input SettingInput {
+  user_agent: String
+  referer: String
+  method: Method!
+  deduplication: Boolean
+  trim: Boolean
+  sort: Boolean
+  selectors: [String!]
+  json_path: [String!]
+}
+
+scalar Time
+
+scalar UUID
+
+type Website {
+  id: ID!
+  url: String!
+  name: String!
+  enabled: Boolean!
+  mode: Mode!
+  next_check_at: Time!
+  cron: CronExpression!
+  setting: Setting
+}
+
+input WebsiteCreateInput {
+  url: String!
+  name: String!
+  enabled: Boolean!
+  mode: Mode!
+  cron: CronExpression!
+  setting: SettingInput!
+}
+
+input WebsiteUpdateInput {
+  id: ID!
+  name: String
+  url: String
+  enabled: Boolean
+  mode: Mode
+  cron: CronExpression
+  setting: SettingInput
+}
+
