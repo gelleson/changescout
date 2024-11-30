@@ -63,6 +63,9 @@ export function WebsiteList() {
                   </h3>
                   <p className="mt-1 text-sm text-gray-500">{website.url}</p>
                   <p className="mt-1 text-xs text-gray-400">
+                    Last check: {website.last_check_at ? new Date(website.last_check_at).toLocaleString() : 'N/A'}
+                  </p>
+                  <p className="mt-1 text-xs text-gray-400">
                     Next check: {new Date(website.next_check_at).toLocaleString()}
                   </p>
                 </Link>

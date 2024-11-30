@@ -9,6 +9,7 @@ export const GET_WEBSITE_BY_ID = gql`query GetWebsiteByID($id: ID!) {
     enabled
     mode
     next_check_at
+    last_check_at
     cron
     setting {
       user_agent
@@ -31,6 +32,7 @@ export const GET_WEBSITE_BY_URL = gql`query GetWebsiteByURL($url: String!) {
     enabled
     mode
     next_check_at
+    last_check_at
     cron
     setting {
       user_agent
@@ -53,6 +55,7 @@ export const GET_WEBSITES = gql`query GetWebsites {
     enabled
     mode
     next_check_at
+    last_check_at
     cron
     setting {
       user_agent
@@ -75,6 +78,7 @@ export const CREATE_WEBSITE = gql`mutation CreateWebsite($input: WebsiteCreateIn
     enabled
     mode
     next_check_at
+    last_check_at
     cron
     setting {
       user_agent
@@ -97,6 +101,7 @@ export const UPDATE_WEBSITE = gql`mutation UpdateWebsite($input: WebsiteUpdateIn
     enabled
     mode
     next_check_at
+    last_check_at
     cron
     setting {
       user_agent
@@ -119,6 +124,7 @@ export const CHANGE_WEBSITE_STATUS = gql`mutation ChangeWebsiteStatus($id: ID!, 
     enabled
     mode
     next_check_at
+    last_check_at
     cron
     setting {
       user_agent

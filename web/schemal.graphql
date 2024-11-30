@@ -119,6 +119,7 @@ type Website {
   enabled: Boolean!
   mode: Mode!
   next_check_at: Time!
+  last_check_at: Time
   cron: CronExpression!
   setting: Setting
 }
