@@ -10,7 +10,7 @@ services:
     env_file:
       - .env
     volumes:
-      - changescout-db:/app/app.db
+      - changescout-data:/opt/changescout/data
 
 volumes:
-  changescout-db:
+  changescout-data:
