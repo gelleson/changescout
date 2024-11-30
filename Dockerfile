@@ -1,3 +1,13 @@
+FROM oven/bun:1 AS ui-builder
+
+WORKDIR /app
+
+COPY web/package.json web/bun.lockb ./
+RUN bun install
+
+COPY web/ ./
+RUN VITE_GRAPHQL_API_URL=/query bun run build
+
 # Use an official Go runtime as a parent image
 FROM golang:1.23-alpine AS builder
 
@@ -17,7 +27,7 @@ COPY . .
 
 RUN go generate ./...
 RUN go run -mod=mod github.com/99designs/gqlgen gen
-
+COPY --from=ui-builder /app/dist ./changescout/pkg/ui/dist/dist
 # Build the application
 RUN CGO_ENABLED=0 GOOS=linux go build -a -o main .
 

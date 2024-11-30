@@ -8,4 +8,5 @@
 **/generated/*
 cover.out
 out.svg
-ui/
+**/dist/dist/*.html
+**/dist/dist/assets/*
