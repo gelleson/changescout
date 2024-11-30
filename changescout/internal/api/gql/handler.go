@@ -63,7 +63,10 @@ func BuildHandler(conf *HandlerConfig) *Handler {
 					},
 					Directives: generated.DirectiveRoot{
 						IsAuthenticated: func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error) {
-							user, _ := contexts.UserContext(ctx)
+							user, isAuthenticated := contexts.UserContext(ctx)
+							if !isAuthenticated {
+								return nil, errors.New("not authenticated")
+							}
 							if user.ID == uuid.Nil {
 								return nil, errors.New("not authenticated")
 							}

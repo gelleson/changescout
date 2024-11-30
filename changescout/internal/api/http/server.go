@@ -35,6 +35,13 @@ func (s *Server) WithMiddlewares(middlewares ...echo.MiddlewareFunc) *Server {
 	s.once.Do(func() {
 		s.router.Use(
 			middleware.Gzip(),
+			middleware.CORSWithConfig(middleware.CORSConfig{
+				AllowOrigins:                             []string{"*"},
+				AllowMethods:                             []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch},
+				AllowHeaders:                             []string{"Content-Type", "Authorization", "X-Requested-With"},
+				AllowCredentials:                         true,
+				UnsafeWildcardOriginWithAllowCredentials: true,
+			}),
 			middleware.Recover(),
 			middleware.RequestID(),
 			echozap.ZapLogger(s.logger),
