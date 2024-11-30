@@ -59,7 +59,7 @@ func TestJWTAuth(t *testing.T) {
 		assert.NoError(t, err)
 
 		req := httptest.NewRequest(http.MethodGet, "/", nil)
-		req.Header.Set("Cookie", "accessToken="+token)
+		req.Header.Set("Authorization", "Bearer "+token)
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
 

@@ -26,7 +26,9 @@ type AuthSignUpByPasswordInput struct {
 }
 
 type AuthStatus struct {
-	Success *bool `json:"success,omitempty"`
+	Success      *bool   `json:"success,omitempty"`
+	AccessToken  *string `json:"accessToken,omitempty"`
+	RefreshToken *string `json:"refreshToken,omitempty"`
 }
 
 type Mutation struct {

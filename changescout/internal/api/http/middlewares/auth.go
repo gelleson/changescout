@@ -8,6 +8,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
+	"strings"
 )
 
 type JWTAuthConfig struct {
@@ -18,13 +19,15 @@ func JWTAuth(cfg JWTAuthConfig) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			log := logger.FromContext(c.Request().Context())
-			authHeader, err := c.Cookie("accessToken")
-			if err != nil {
-				log.Error("JWT verification failed", zap.Error(err))
+			authHeader := c.Request().Header.Get("Authorization")
+			if authHeader == "" {
+				log.Error("jwt empty auth header")
 				return next(c)
 			}
 
-			usr, err := verifyJWT(authHeader.Value, cfg.Secret)
+			authHeader = strings.TrimPrefix(authHeader, "Bearer ")
+
+			usr, err := verifyJWT(authHeader, cfg.Secret)
 			if err != nil {
 				log.Error("JWT verification failed", zap.Error(err))
 				return next(c)

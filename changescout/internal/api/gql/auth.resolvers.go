@@ -46,7 +46,9 @@ func (r *mutationResolver) SignInByPassword(ctx context.Context, input *model.Au
 	)
 
 	return &model.AuthStatus{
-		Success: transform.ToPtr(true),
+		Success:      transform.ToPtr(true),
+		AccessToken:  &token,
+		RefreshToken: &token,
 	}, nil
 }
 
@@ -74,7 +76,9 @@ func (r *mutationResolver) SignUpByPassword(ctx context.Context, input *model.Au
 		},
 	)
 	return &model.AuthStatus{
-		Success: transform.ToPtr(true),
+		Success:      transform.ToPtr(true),
+		AccessToken:  &token,
+		RefreshToken: &token,
 	}, nil
 }
 

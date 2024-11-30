@@ -17,4 +17,6 @@ input AuthSignInByPasswordInput {
 
 type AuthStatus {
     success: Boolean
+    accessToken: String
+    refreshToken: String
 }
