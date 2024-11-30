@@ -127,6 +127,12 @@ export function WebsiteDetailPage() {
                 })()}
               </p>
             </div>
+            <div>
+              <label className="text-sm font-medium text-gray-500">Last Check</label>
+              <p className="text-gray-900">
+                {website.last_check_at ? new Date(website.last_check_at).toLocaleString() : 'N/A'}
+              </p>
+            </div>
           </CardContent>
         </Card>
 
