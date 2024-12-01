@@ -5,6 +5,7 @@ import { GET_WEBSITE_BY_ID, DELETE_WEBSITE } from '../../lib/graphql/websites';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Edit, ArrowLeft, Globe, Clock, Settings, Trash2 } from 'lucide-react';
+import { formatDate } from '../../lib/utils';
 
 export function WebsiteDetailPage() {
   const { id } = useParams();
@@ -106,32 +107,11 @@ export function WebsiteDetailPage() {
             </div>
             <div>
               <label className="text-sm font-medium text-gray-500">Next Check</label>
-              <p className="text-gray-900">
-                {(() => {
-                  const nextCheckDate = new Date(website.next_check_at);
-                  const now = new Date();
-                  const options = {
-                    month: 'long',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: false
-                  };
-                  if (nextCheckDate.getFullYear() !== now.getFullYear()) {
-                    return nextCheckDate.toLocaleString(undefined, {
-                      year: 'numeric',
-                      ...options
-                    });
-                  }
-                  return nextCheckDate.toLocaleString(undefined, options);
-                })()}
-              </p>
+              <p className="text-gray-900">{formatDate(new Date(website.next_check_at))}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-gray-500">Last Check</label>
-              <p className="text-gray-900">
-                {website.last_check_at ? new Date(website.last_check_at).toLocaleString() : 'N/A'}
-              </p>
+              <p className="text-gray-900">{website.last_check_at ? formatDate(new Date(website.last_check_at)) : 'N/A'}</p>
             </div>
           </CardContent>
         </Card>
