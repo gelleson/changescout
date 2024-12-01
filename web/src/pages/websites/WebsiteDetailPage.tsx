@@ -99,9 +99,9 @@ export function WebsiteDetailPage() {
           </Sheet.Header>
           <Sheet.Content>
             <div className="p-4">
-              {previewData.data ? (
+              {previewData && previewData.getPreviewWebsite ? (
                 <div>
-                  <p>{previewData.data.getPreviewWebsite.reset}</p>
+                  <p>{previewData.getPreviewWebsite.result}</p>
                 </div>
               ) : (
                 <p>No preview available.</p>
