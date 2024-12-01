@@ -14,3 +14,10 @@ coverage: tests
 [doc("Generate a coverage SVG visualization from the coverage profile")]
 coverage-svg: tests
     @$HOME/go/bin/go-cover-treemap -coverprofile coverage.txt > out.svg
+
+
+[no-cd]
+[doc("Download all dependencies")]
+deps:
+    @go install github.com/vektra/mockery/v2@v2.49.1
+    @go install github.com/nikolaydubina/go-cover-treemap@latest
