@@ -57,17 +57,16 @@ func NewUseCase(
 	}
 }
 
-func (u UseCase) Check(ctx context.Context, websiteID uuid.UUID) (domain.CheckResult, error) {
-	// Get website details
+func (u UseCase) View(ctx context.Context, websiteID uuid.UUID) ([]byte, error) {
 	site, err := u.websiteService.GetByID(ctx, websiteID)
 	if err != nil {
-		return domain.CheckResult{}, fmt.Errorf("failed to get website: %w", err)
+		return nil, fmt.Errorf("failed to get website: %w", err)
 	}
 
 	// Make HTTP request
 	body, err := u.makeRequestAndHandleError(ctx, site)
 	if err != nil {
-		return domain.CheckResult{}, err
+		return nil, err
 	}
 
 	processor := processors.New(
@@ -79,6 +78,22 @@ func (u UseCase) Check(ctx context.Context, websiteID uuid.UUID) (domain.CheckRe
 	)
 
 	body = processor.Run(body)
+
+	return body, nil
+}
+
+func (u UseCase) Check(ctx context.Context, websiteID uuid.UUID) (domain.CheckResult, error) {
+	// Get website details
+	site, err := u.websiteService.GetByID(ctx, websiteID)
+	if err != nil {
+		return domain.CheckResult{}, fmt.Errorf("failed to get website: %w", err)
+	}
+
+	// Make HTTP request
+	body, err := u.View(ctx, site.ID)
+	if err != nil {
+		return domain.CheckResult{}, err
+	}
 
 	// Compare with previous check
 	diffResult, prevResult, err := u.compareWithPreviousCheck(ctx, site.ID, body)

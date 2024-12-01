@@ -8,8 +8,10 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/gelleson/changescout/changescout/internal/api/gql/generated"
 	"github.com/gelleson/changescout/changescout/internal/app/services"
+	"github.com/gelleson/changescout/changescout/internal/app/services/diff"
 	"github.com/gelleson/changescout/changescout/internal/app/usecases"
 	"github.com/gelleson/changescout/changescout/internal/app/usecases/auth"
+	"github.com/gelleson/changescout/changescout/internal/app/usecases/check"
 	entrepo "github.com/gelleson/changescout/changescout/internal/infrastructure/database/ent"
 	"github.com/gelleson/changescout/changescout/internal/infrastructure/database/ent/ent"
 	"github.com/gelleson/changescout/changescout/internal/pkg/contexts"
@@ -59,6 +61,16 @@ func BuildHandler(conf *HandlerConfig) *Handler {
 						),
 						NotificationService: services.NewNotificationService(
 							entrepo.NewNotificationRepository(conf.Client),
+						),
+						CheckUseCase: check.NewUseCase(
+							services.NewWebsiteService(
+								entrepo.NewWebsiteRepository(conf.Client),
+							),
+							services.NewHttpService(http.DefaultClient),
+							services.NewCheckService(
+								entrepo.NewCheckRepository(conf.Client),
+							),
+							diff.NewDiffService(),
 						),
 					},
 					Directives: generated.DirectiveRoot{

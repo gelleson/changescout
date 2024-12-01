@@ -84,6 +84,7 @@ type Query {
   getWebsiteByID(id: ID!): Website
   getWebsiteByURL(url: String!): Website
   getWebsites: [Website!]!
+  getPreviewWebsite(url: ID!): WebsitePreview
 }
 
 type Setting {
@@ -131,6 +132,10 @@ input WebsiteCreateInput {
   mode: Mode!
   cron: CronExpression!
   setting: SettingInput!
+}
+
+type WebsitePreview {
+  result: String!
 }
 
 input WebsiteUpdateInput {

@@ -28,6 +28,7 @@ extend type Query {
     getWebsiteByID(id: ID!): Website @isAuthenticated
     getWebsiteByURL(url: String!): Website @isAuthenticated
     getWebsites: [Website!]! @isAuthenticated
+    getPreviewWebsite(url: ID!): WebsitePreview @isAuthenticated
 }
 
 extend type Mutation {
@@ -77,4 +78,8 @@ input WebsiteUpdateInput {
     mode: Mode
     cron: CronExpression
     setting: SettingInput
+}
+
+type WebsitePreview {
+    result: String!
 }
