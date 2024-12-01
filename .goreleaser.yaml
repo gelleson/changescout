@@ -43,7 +43,7 @@ archives:
         format: zip
 
 changelog:
-  use: github
+  use: github-native
   sort: '' # use the output of `git log` as is
   filters:
     exclude:
