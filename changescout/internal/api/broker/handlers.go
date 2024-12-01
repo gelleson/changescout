@@ -25,13 +25,13 @@ func (b *Broker) HandleWebsiteCheck() HandlerFunc {
 			return err
 		}
 
-		if !res.HasChanges {
-			return nil
-		}
-
 		if err := b.usecases.WebsiteUseCase.UpdateLastCheck(msg.Context(), site.ID); err != nil {
 			b.logger.Error("Failed to update last check", zap.Error(err))
 			return err
+		}
+
+		if !res.HasChanges {
+			return nil
 		}
 
 		if err := b.usecases.NotificationUseCase.NotifyChanges(msg.Context(), site.ID, res); err != nil {
