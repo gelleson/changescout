@@ -46,7 +46,6 @@ export function WebsiteDetailPage() {
   if (error) return <div>Error loading website details</div>;
 
   const website = data?.getWebsiteByID;
-  const websitePreview = previewData?.getPreviewWebsite;
 
   if (!website) return <div>No website data available.</div>;
 
@@ -100,10 +99,9 @@ export function WebsiteDetailPage() {
           </Sheet.Header>
           <Sheet.Content>
             <div className="p-4">
-              {websitePreview ? (
+              {previewData.data ? (
                 <div>
-                  <h2 className="text-lg font-bold">{websitePreview.title}</h2>
-                  <p>{websitePreview.description}</p>
+                  <p>{previewData.data.getPreviewWebsite.reset}</p>
                 </div>
               ) : (
                 <p>No preview available.</p>
