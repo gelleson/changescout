@@ -10,3 +10,4 @@ cover.out
 out.svg
 **/dist/dist/*.html
 **/dist/dist/assets/*
+dist/

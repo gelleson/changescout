@@ -1,5 +1,8 @@
 set dotenv-load
 
+[doc("Act")]
+mod act "./deployments/workflows/act.justfile"
+
 [doc("CI/CD")]
 mod ci "./deployments/workflows/ci.justfile"
 
