@@ -274,3 +274,73 @@ func (s *CheckTestSuite) TestNoPreviousCheck() {
 	s.checkService.AssertExpectations(s.T())
 	s.diffService.AssertExpectations(s.T())
 }
+
+func (s *CheckTestSuite) TestViewSuccess() {
+	// Arrange
+	websiteID := uuid.New()
+	website := domain.Website{
+		ID:  websiteID,
+		URL: "https://example.com",
+	}
+	expectedContent := []byte("processed content")
+
+	s.websiteService.On("GetByID", s.ctx, websiteID).Return(website, nil)
+	s.httpService.On("Request", website).Return(expectedContent, nil)
+
+	// Act
+	result, err := s.useCase.View(s.ctx, websiteID)
+
+	// Assert
+	assert.NoError(s.T(), err)
+	assert.Equal(s.T(), expectedContent, result)
+	s.websiteService.AssertExpectations(s.T())
+	s.httpService.AssertExpectations(s.T())
+}
+
+func (s *CheckTestSuite) TestViewWebsiteNotFound() {
+	// Arrange
+	websiteID := uuid.New()
+	expectedErr := domain.ErrWebsiteNotFound
+
+	s.websiteService.On("GetByID", s.ctx, websiteID).Return(domain.Website{}, expectedErr)
+
+	// Act
+	result, err := s.useCase.View(s.ctx, websiteID)
+
+	// Assert
+	assert.Error(s.T(), err)
+	assert.Contains(s.T(), err.Error(), "failed to get website")
+	assert.ErrorIs(s.T(), err, expectedErr)
+	assert.Nil(s.T(), result)
+	s.websiteService.AssertExpectations(s.T())
+}
+
+func (s *CheckTestSuite) TestViewRequestError() {
+	// Arrange
+	websiteID := uuid.New()
+	website := domain.Website{
+		ID:  websiteID,
+		URL: "https://example.com",
+	}
+	requestErr := domain.ErrRequestFailed
+
+	s.websiteService.On("GetByID", s.ctx, websiteID).Return(website, nil)
+	s.httpService.On("Request", website).Return(nil, requestErr)
+	s.checkService.On("CreateCheck", s.ctx, mock.MatchedBy(func(check domain.Check) bool {
+		return check.WebsiteID == websiteID &&
+			check.HasError == true &&
+			check.ErrorMessage == requestErr.Error()
+	})).Return(domain.Check{}, nil)
+
+	// Act
+	result, err := s.useCase.View(s.ctx, websiteID)
+
+	// Assert
+	assert.Error(s.T(), err)
+	assert.Contains(s.T(), err.Error(), "failed to make HTTP request")
+	assert.ErrorIs(s.T(), err, requestErr)
+	assert.Nil(s.T(), result)
+	s.websiteService.AssertExpectations(s.T())
+	s.httpService.AssertExpectations(s.T())
+	s.checkService.AssertExpectations(s.T())
+}

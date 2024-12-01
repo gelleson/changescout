@@ -4,6 +4,7 @@ import (
 	"github.com/gelleson/changescout/changescout/internal/app/services"
 	"github.com/gelleson/changescout/changescout/internal/app/usecases"
 	"github.com/gelleson/changescout/changescout/internal/app/usecases/auth"
+	"github.com/gelleson/changescout/changescout/internal/app/usecases/check"
 )
 
 // This file will not be regenerated automatically.
@@ -14,4 +15,5 @@ type Resolver struct {
 	WebsiteUseCase      *usecases.WebsiteUseCase
 	AuthUseCase         *auth.UseCase
 	NotificationService *services.NotificationService
+	CheckUseCase        *check.UseCase
 }

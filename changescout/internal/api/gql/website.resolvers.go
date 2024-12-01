@@ -6,7 +6,6 @@ package gql
 
 import (
 	"context"
-
 	"github.com/gelleson/changescout/changescout/internal/api/gql/model"
 	"github.com/gelleson/changescout/changescout/internal/domain"
 	"github.com/gelleson/changescout/changescout/internal/pkg/contexts"
@@ -130,4 +129,16 @@ func (r *queryResolver) GetWebsites(ctx context.Context) ([]*domain.Website, err
 	return transform.MapObjects(sites, func(t domain.Website) *domain.Website {
 		return &t
 	}), nil
+}
+
+// GetPreviewWebsite is the resolver for the getPreviewWebsite field.
+func (r *queryResolver) GetPreviewWebsite(ctx context.Context, url uuid.UUID) (*model.WebsitePreview, error) {
+	preview, err := r.CheckUseCase.View(ctx, url)
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.WebsitePreview{
+		Result: string(preview),
+	}, nil
 }

@@ -1,24 +1,19 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation } from '@apollo/client';
-import { GET_WEBSITE_BY_ID, DELETE_WEBSITE } from '../../lib/graphql/websites';
+import { GET_WEBSITE_BY_ID, DELETE_WEBSITE, GET_PREVIEW_WEBSITE } from '../../lib/graphql/websites';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Edit, ArrowLeft, Globe, Clock, Settings, Trash2 } from 'lucide-react';
+import { Edit, ArrowLeft, Globe, Clock, Settings, Trash2, Menu } from 'lucide-react';
 import { formatDate } from '../../lib/utils';
+import { Sheet} from 'react-modal-sheet';
 
 export function WebsiteDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { data, loading, error } = useQuery(GET_WEBSITE_BY_ID, { variables: { id } });
   const [deleteWebsite] = useMutation(DELETE_WEBSITE);
-
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error loading website details</div>;
-
-  const website = data?.getWebsiteByID;
-
-  if (!website) return <div>No website data available.</div>;
+  const [isPreviewOpen, setPreviewOpen] = useState(false);
+  const [fetchPreview, setFetchPreview] = useState(false);
 
   const handleDelete = async () => {
     if (confirm('Are you sure you want to delete this website?')) {
@@ -32,6 +27,28 @@ export function WebsiteDetailPage() {
       }
     }
   };
+
+  const handlePreview = () => {
+    setFetchPreview(true);
+    setPreviewOpen(true);
+  };
+
+  useEffect(() => {
+    if (fetchPreview) {
+      refetch();
+      setFetchPreview(false);
+    }
+  }, [fetchPreview]);
+
+  const { data: previewData, loading: previewLoading, refetch } = useQuery(GET_PREVIEW_WEBSITE, { variables: { url: id }, skip: !fetchPreview });
+
+  if (loading || (previewLoading && fetchPreview)) return <div>Loading...</div>;
+  if (error) return <div>Error loading website details</div>;
+
+  const website = data?.getWebsiteByID;
+  const websitePreview = previewData?.getPreviewWebsite;
+
+  if (!website) return <div>No website data available.</div>;
 
   return (
     <div className="container mx-auto py-6">
@@ -61,9 +78,41 @@ export function WebsiteDetailPage() {
               <Trash2 className="h-4 w-4 mr-2" />
               Delete Website
             </button>
+            <button
+              onClick={handlePreview}
+              className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+            >
+              Preview
+            </button>
           </div>
         </div>
       </div>
+
+      <Sheet isOpen={isPreviewOpen} onClose={() => setPreviewOpen(false)}>
+        <Sheet.Container>
+          <Sheet.Header>
+            <div className="flex justify-between items-center p-4 border-b">
+              <span className="text-xl font-semibold">Website Preview</span>
+              <button className="p-2 rounded-full text-gray-500 hover:text-gray-700" onClick={() => setPreviewOpen(false)}>
+                <Menu className="h-6 w-6" />
+              </button>
+            </div>
+          </Sheet.Header>
+          <Sheet.Content>
+            <div className="p-4">
+              {websitePreview ? (
+                <div>
+                  <h2 className="text-lg font-bold">{websitePreview.title}</h2>
+                  <p>{websitePreview.description}</p>
+                </div>
+              ) : (
+                <p>No preview available.</p>
+              )}
+            </div>
+          </Sheet.Content>
+        </Sheet.Container>
+        <Sheet.Backdrop />
+      </Sheet>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Basic Info Card */}

@@ -142,3 +142,9 @@ export const CHANGE_WEBSITE_STATUS = gql`mutation ChangeWebsiteStatus($id: ID!, 
 export const DELETE_WEBSITE = gql`mutation DeleteWebsite($id: ID!) {
   deleteWebsite(id: $id)
 }`;
+
+export const GET_PREVIEW_WEBSITE = gql`query GetPreviewWebsite($url: ID!) {
+  getPreviewWebsite(url: $url) {
+    result
+  }
+}`;

@@ -80,6 +80,10 @@ type WebsiteCreateInput struct {
 	Setting *SettingInput        `json:"setting"`
 }
 
+type WebsitePreview struct {
+	Result string `json:"result"`
+}
+
 type WebsiteUpdateInput struct {
 	ID      uuid.UUID             `json:"id"`
 	Name    *string               `json:"name,omitempty"`
