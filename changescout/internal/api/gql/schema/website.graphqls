@@ -28,7 +28,6 @@ extend type Query {
     getWebsiteByID(id: ID!): Website @isAuthenticated
     getWebsiteByURL(url: String!): Website @isAuthenticated
     getWebsites: [Website!]! @isAuthenticated
-    getPreviewWebsite(url: ID!): WebsitePreview @isAuthenticated
 }
 
 extend type Mutation {
@@ -36,6 +35,7 @@ extend type Mutation {
     updateWebsite(input: WebsiteUpdateInput!): Website! @isAuthenticated
     changeWebsiteStatus(id: ID!, enabled: Boolean!): Website! @isAuthenticated
     deleteWebsite(id: ID!): Boolean! @isAuthenticated
+    createPreviewWebsite(url: ID!): WebsitePreview @isAuthenticated
 }
 
 enum Method {

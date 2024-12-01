@@ -99,6 +99,18 @@ func (r *mutationResolver) DeleteWebsite(ctx context.Context, id uuid.UUID) (boo
 	return true, nil
 }
 
+// CreatePreviewWebsite is the resolver for the createPreviewWebsite field.
+func (r *mutationResolver) CreatePreviewWebsite(ctx context.Context, url uuid.UUID) (*model.WebsitePreview, error) {
+	preview, err := r.CheckUseCase.View(ctx, url)
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.WebsitePreview{
+		Result: string(preview),
+	}, nil
+}
+
 // GetWebsiteByID is the resolver for the getWebsiteByID field.
 func (r *queryResolver) GetWebsiteByID(ctx context.Context, id uuid.UUID) (*domain.Website, error) {
 	user, _ := contexts.UserContext(ctx)
@@ -129,16 +141,4 @@ func (r *queryResolver) GetWebsites(ctx context.Context) ([]*domain.Website, err
 	return transform.MapObjects(sites, func(t domain.Website) *domain.Website {
 		return &t
 	}), nil
-}
-
-// GetPreviewWebsite is the resolver for the getPreviewWebsite field.
-func (r *queryResolver) GetPreviewWebsite(ctx context.Context, url uuid.UUID) (*model.WebsitePreview, error) {
-	preview, err := r.CheckUseCase.View(ctx, url)
-	if err != nil {
-		return nil, err
-	}
-
-	return &model.WebsitePreview{
-		Result: string(preview),
-	}, nil
 }

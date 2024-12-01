@@ -40,6 +40,7 @@ type Mutation {
   updateWebsite(input: WebsiteUpdateInput!): Website!
   changeWebsiteStatus(id: ID!, enabled: Boolean!): Website!
   deleteWebsite(id: ID!): Boolean!
+  createPreviewWebsite(url: ID!): WebsitePreview
 }
 
 type Notification {
@@ -84,7 +85,6 @@ type Query {
   getWebsiteByID(id: ID!): Website
   getWebsiteByURL(url: String!): Website
   getWebsites: [Website!]!
-  getPreviewWebsite(url: ID!): WebsitePreview
 }
 
 type Setting {

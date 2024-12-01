@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation } from '@apollo/client';
-import { GET_WEBSITE_BY_ID, DELETE_WEBSITE, GET_PREVIEW_WEBSITE } from '../../lib/graphql/websites';
+import { GET_WEBSITE_BY_ID, DELETE_WEBSITE, CREATE_PREVIEW_WEBSITE } from '../../lib/graphql/websites';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Edit, ArrowLeft, Globe, Clock, Settings, Trash2, Menu } from 'lucide-react';
 import { formatDate } from '../../lib/utils';
@@ -12,8 +12,9 @@ export function WebsiteDetailPage() {
   const navigate = useNavigate();
   const { data, loading, error } = useQuery(GET_WEBSITE_BY_ID, { variables: { id } });
   const [deleteWebsite] = useMutation(DELETE_WEBSITE);
+  const [createPreviewWebsite] = useMutation(CREATE_PREVIEW_WEBSITE);
   const [isPreviewOpen, setPreviewOpen] = useState(false);
-  const [fetchPreview, setFetchPreview] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);
 
   const handleDelete = async () => {
     if (confirm('Are you sure you want to delete this website?')) {
@@ -28,21 +29,17 @@ export function WebsiteDetailPage() {
     }
   };
 
-  const handlePreview = () => {
-    setFetchPreview(true);
-    setPreviewOpen(true);
+  const handleCreatePreview = async () => {
+    try {
+      const { data } = await createPreviewWebsite({ variables: { url: id } });
+      setPreview(data.createPreviewWebsite.result);
+      setPreviewOpen(true);
+    } catch (error) {
+      console.error('Error creating preview:', error);
+    }
   };
 
-  useEffect(() => {
-    if (fetchPreview) {
-      refetch();
-      setFetchPreview(false);
-    }
-  }, [fetchPreview]);
-
-  const { data: previewData, loading: previewLoading, refetch } = useQuery(GET_PREVIEW_WEBSITE, { variables: { url: id }, skip: !fetchPreview });
-
-  if (loading || (previewLoading && fetchPreview)) return <div>Loading...</div>;
+  if (loading) return <div>Loading...</div>;
   if (error) return <div>Error loading website details</div>;
 
   const website = data?.getWebsiteByID;
@@ -78,7 +75,7 @@ export function WebsiteDetailPage() {
               Delete Website
             </button>
             <button
-              onClick={handlePreview}
+              onClick={() => handleCreatePreview()}
               className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
             >
               Preview
@@ -99,13 +96,7 @@ export function WebsiteDetailPage() {
           </Sheet.Header>
           <Sheet.Content>
             <div className="p-4">
-              {previewData && previewData.getPreviewWebsite ? (
-                <div>
-                  <p>{previewData.getPreviewWebsite.result}</p>
-                </div>
-              ) : (
-                <p>No preview available.</p>
-              )}
+              <p>{preview}</p>
             </div>
           </Sheet.Content>
         </Sheet.Container>

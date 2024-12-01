@@ -148,3 +148,9 @@ export const GET_PREVIEW_WEBSITE = gql`query GetPreviewWebsite($url: ID!) {
     result
   }
 }`;
+
+export const CREATE_PREVIEW_WEBSITE = gql`mutation CreatePreviewWebsite($url: ID!) {
+  createPreviewWebsite(url: $url) {
+    result
+  }
+}`;
