@@ -1,9 +1,11 @@
 #!/usr/bin/env just --justfile
+args := "-v $(go list ./... | grep -v 'ent/ent' | grep -v 'gql/' | grep -v 'mocks/' | grep -v '**/cmd/*' | grep -v '**/internal/api/' )"
+output := "-coverprofile coverage.txt"
 
 [no-cd]
 [doc("Run all tests with detailed output and generate a coverage profile (coverage.txt)")]
 tests:
-    @go test -v $(go list ./... | grep -v 'ent/ent' | grep -v 'gql/' | grep -v 'mocks/' ) -coverprofile coverage.txt
+    @go test {{ args }} {{ output }}
 
 [no-cd]
 [doc("Display the test coverage report in HTML format using the generated coverage profile")]
@@ -12,7 +14,8 @@ coverage: tests
 
 [no-cd]
 [doc("Show total test coverage")]
-coverage-total: tests
+coverage-total:
+    @go test {{ args }} {{ output }} > /dev/null 2>&1
     @go tool cover -func=coverage.txt | grep total
 
 [no-cd]

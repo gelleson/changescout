@@ -10,10 +10,11 @@ import (
 )
 
 type Server struct {
-	logger  *zap.Logger
-	router  *echo.Echo
-	options *option
-	once    sync.Once
+	logger      *zap.Logger
+	router      *echo.Echo
+	options     *option
+	once        sync.Once
+	middlewares []echo.MiddlewareFunc
 }
 
 func runPipeline[T any](pipeline []func(*T), input *T) *T {
@@ -28,12 +29,7 @@ func New(logger *zap.Logger, options ...func(o *option)) *Server {
 		logger:  logger,
 		router:  echo.New(),
 		options: runPipeline[option](options, &option{}),
-	}
-}
-
-func (s *Server) WithMiddlewares(middlewares ...echo.MiddlewareFunc) *Server {
-	s.once.Do(func() {
-		s.router.Use(
+		middlewares: []echo.MiddlewareFunc{
 			middleware.Gzip(),
 			middleware.CORSWithConfig(middleware.CORSConfig{
 				AllowOrigins: []string{"*"},
@@ -42,12 +38,14 @@ func (s *Server) WithMiddlewares(middlewares ...echo.MiddlewareFunc) *Server {
 			}),
 			middleware.Recover(),
 			middleware.RequestID(),
-			echozap.ZapLogger(s.logger),
+			echozap.ZapLogger(logger),
 			WithCtx(),
-		)
-	})
+		},
+	}
+}
 
-	s.router.Use(middlewares...)
+func (s *Server) WithMiddlewares(middlewares ...echo.MiddlewareFunc) *Server {
+	s.middlewares = append(s.middlewares, middlewares...)
 	return s
 }
 
@@ -56,6 +54,7 @@ func (s *Server) Register(method string, pattern string, handler echo.HandlerFun
 }
 
 func (s *Server) Start() error {
+	s.router.Use(s.middlewares...)
 	RegisterHandlers(s.router)
 
 	s.logger.Info("Starting server")

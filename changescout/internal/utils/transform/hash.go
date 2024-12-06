@@ -13,12 +13,8 @@ func HashSlice[T comparable](slice []T) string {
 	for _, elem := range slice {
 		// Convert each element to bytes
 		// You may need to handle different types more explicitly in a production scenario
-		_, err := hasher.Write([]byte(fmt.Sprintf("%v", elem)))
-		if err != nil {
-			panic(err)
-		}
+		_, _ = hasher.Write([]byte(fmt.Sprintf("%v", elem)))
 	}
-
 	// Compute the hash and return it as a hex string
 	hash := hasher.Sum(nil)
 	return hex.EncodeToString(hash)

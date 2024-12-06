@@ -10,6 +10,7 @@ import (
 	"time"
 )
 
+//go:generate mockery --name WebsiteService
 type WebsiteService interface {
 	Create(ctx context.Context, website domain.Website) (domain.Website, error)
 	GetByID(ctx context.Context, id uuid.UUID) (domain.Website, error)
@@ -25,6 +26,7 @@ type WebsiteService interface {
 	Delete(ctx context.Context, id uuid.UUID) error
 }
 
+//go:generate mockery --name UserService
 type UserService interface {
 	GetByID(ctx context.Context, id uuid.UUID) (domain.User, error)
 }

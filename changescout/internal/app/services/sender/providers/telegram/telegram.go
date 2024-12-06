@@ -9,6 +9,7 @@ import (
 	"net/http"
 )
 
+//go:generate mockery --name Doer
 type Doer interface {
 	Do(*http.Request) (*http.Response, error)
 }
@@ -40,14 +41,11 @@ func encode[T any](v T) io.Reader {
 func (t *Telegram) Send(notification string, conf domain.Notification) error {
 	tUrl := fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage", *conf.Token)
 
-	req, err := http.NewRequest("POST", tUrl, encode(message{
+	req, _ := http.NewRequest("POST", tUrl, encode(message{
 		ChatID:    conf.Destination,
 		Text:      notification,
 		ParseMode: "Markdown",
 	}))
-	if err != nil {
-		return err
-	}
 
 	req.Header.Set("Content-Type", "application/json")
 

@@ -7,6 +7,7 @@ import (
 	"net/http"
 )
 
+//go:generate mockery --name Doer
 type Doer interface {
 	Do(*http.Request) (*http.Response, error)
 }

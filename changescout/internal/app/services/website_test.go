@@ -4,15 +4,14 @@ import (
 	"context"
 	"errors"
 	"github.com/gelleson/changescout/changescout/internal/app/services/mocks"
-	"github.com/gelleson/changescout/changescout/internal/utils/transform"
-	"testing"
-	"time"
-
 	"github.com/gelleson/changescout/changescout/internal/domain"
 	"github.com/gelleson/changescout/changescout/internal/infrastructure/database"
+	"github.com/gelleson/changescout/changescout/internal/utils/transform"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
+	"testing"
+	"time"
 )
 
 type WebsiteServiceTestSuite struct {
@@ -32,6 +31,7 @@ func TestWebsiteServiceSuite(t *testing.T) {
 	suite.Run(t, new(WebsiteServiceTestSuite))
 }
 
+// Тестирование метода Create
 func (s *WebsiteServiceTestSuite) TestCreate() {
 	baseTime := time.Now()
 	tests := []struct {
@@ -51,7 +51,6 @@ func (s *WebsiteServiceTestSuite) TestCreate() {
 			},
 			mock: func() {
 				s.mockRepo.On("CreateWebsite", s.ctx, mock.MatchedBy(func(w domain.Website) bool {
-					// Verify NextCheckAt is set and is in the future
 					return w.NextCheckAt != nil && w.NextCheckAt.After(baseTime)
 				})).Return(domain.Website{
 					ID:          uuid.New(),
@@ -135,6 +134,7 @@ func (s *WebsiteServiceTestSuite) TestCreate() {
 	}
 }
 
+// Тестирование метода UpdateLastCheck
 func (s *WebsiteServiceTestSuite) TestUpdateLastCheck() {
 	baseTime := time.Now()
 	tests := []struct {
@@ -204,7 +204,7 @@ func (s *WebsiteServiceTestSuite) TestUpdateLastCheck() {
 	}
 }
 
-// Rest of the test functions remain the same, but update the mock websites to include Cron field
+// Тестирование метода GetByID
 func (s *WebsiteServiceTestSuite) TestGetByID() {
 	tests := []struct {
 		name    string
@@ -253,6 +253,7 @@ func (s *WebsiteServiceTestSuite) TestGetByID() {
 	}
 }
 
+// Тестирование метода List
 func (s *WebsiteServiceTestSuite) TestList() {
 	pagination := domain.Pagination{
 		Limit:  10,
@@ -312,6 +313,283 @@ func (s *WebsiteServiceTestSuite) TestList() {
 			s.NoError(err)
 			s.NotEmpty(got)
 			s.Greater(count, 0)
+		})
+	}
+}
+
+// Добавленный тест для GetByURL
+func (s *WebsiteServiceTestSuite) TestGetByURL() {
+	tests := []struct {
+		name    string
+		url     string
+		mock    func()
+		wantErr bool
+	}{
+		{
+			name: "successful get",
+			url:  "https://example.com",
+			mock: func() {
+				expectedWebsite := domain.Website{
+					ID:      uuid.New(),
+					URL:     "https://example.com",
+					UserID:  uuid.New(),
+					Enabled: true,
+					Cron:    "*/15 * * * *",
+				}
+				s.mockRepo.On("GetWebsiteByURL", s.ctx, "https://example.com").
+					Return(expectedWebsite, nil).Once()
+			},
+			wantErr: false,
+		},
+		{
+			name: "website not found",
+			url:  "https://notfound.com",
+			mock: func() {
+				s.mockRepo.On("GetWebsiteByURL", s.ctx, "https://notfound.com").
+					Return(domain.Website{}, errors.New("not found")).Once()
+			},
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		s.Run(tt.name, func() {
+			tt.mock()
+			got, err := s.service.GetByURL(s.ctx, tt.url)
+			if tt.wantErr {
+				s.Error(err)
+				return
+			}
+			s.NoError(err)
+			s.NotEmpty(got)
+		})
+	}
+}
+
+// Добавленный тест для GetByUserID
+func (s *WebsiteServiceTestSuite) TestGetByUserID() {
+	pagination := domain.Pagination{
+		Limit:  10,
+		Offset: 0,
+	}
+	tests := []struct {
+		name    string
+		userID  uuid.UUID
+		mock    func()
+		wantErr bool
+	}{
+		{
+			name:   "successful get by user id",
+			userID: uuid.New(),
+			mock: func() {
+				websites := []domain.Website{
+					{
+						ID:      uuid.New(),
+						URL:     "https://example1.com",
+						UserID:  uuid.New(),
+						Enabled: true,
+						Cron:    "*/15 * * * *",
+					},
+				}
+				s.mockRepo.On("GetWebsiteByUserID", s.ctx, mock.AnythingOfType("uuid.UUID"), pagination).
+					Return(websites, nil).Once()
+			},
+			wantErr: false,
+		},
+		{
+			name:   "user has no websites",
+			userID: uuid.New(),
+			mock: func() {
+				s.mockRepo.On("GetWebsiteByUserID", s.ctx, mock.AnythingOfType("uuid.UUID"), pagination).
+					Return([]domain.Website{}, nil).Once()
+			},
+			wantErr: false,
+		},
+	}
+
+	for _, tt := range tests {
+		s.Run(tt.name, func() {
+			tt.mock()
+			got, err := s.service.GetByUserID(s.ctx, tt.userID, pagination)
+			if tt.wantErr {
+				s.Error(err)
+				return
+			}
+			s.NoError(err)
+			s.NotNil(got)
+		})
+	}
+}
+
+// Добавленный тест для GetDueForCheck
+func (s *WebsiteServiceTestSuite) TestGetDueForCheck() {
+	pagination := domain.Pagination{
+		Limit:  10,
+		Offset: 0,
+	}
+	tests := []struct {
+		name    string
+		mock    func()
+		wantErr bool
+	}{
+		{
+			name: "successful retrieve due websites",
+			mock: func() {
+				websites := []domain.Website{
+					{
+						ID:          uuid.New(),
+						URL:         "https://exampledue.com",
+						UserID:      uuid.New(),
+						Enabled:     true,
+						NextCheckAt: transform.ToPtr(time.Now().Add(-time.Hour)),
+					},
+				}
+				s.mockRepo.On("GetWebsitesDueForCheck", s.ctx, pagination).
+					Return(websites, nil).Once()
+			},
+			wantErr: false,
+		},
+	}
+
+	for _, tt := range tests {
+		s.Run(tt.name, func() {
+			tt.mock()
+			got, err := s.service.GetDueForCheck(s.ctx, pagination)
+			if tt.wantErr {
+				s.Error(err)
+				return
+			}
+			s.NoError(err)
+			s.NotNil(got)
+		})
+	}
+}
+
+// Добавленный тест для GetByStatus
+func (s *WebsiteServiceTestSuite) TestGetByStatus() {
+	pagination := domain.Pagination{
+		Limit:  10,
+		Offset: 0,
+	}
+	tests := []struct {
+		name    string
+		enabled bool
+		mock    func()
+		wantErr bool
+	}{
+		{
+			name:    "successful get by status",
+			enabled: true,
+			mock: func() {
+				websites := []domain.Website{
+					{
+						ID:      uuid.New(),
+						URL:     "https://examplestatus.com",
+						UserID:  uuid.New(),
+						Enabled: true,
+						Cron:    "0 * * * *",
+					},
+				}
+				s.mockRepo.On("GetWebsitesByStatus", s.ctx, true, pagination).
+					Return(websites, nil).Once()
+			},
+			wantErr: false,
+		},
+	}
+
+	for _, tt := range tests {
+		s.Run(tt.name, func() {
+			tt.mock()
+			got, err := s.service.GetByStatus(s.ctx, tt.enabled, pagination)
+			if tt.wantErr {
+				s.Error(err)
+				return
+			}
+			s.NoError(err)
+			s.NotNil(got)
+		})
+	}
+}
+
+// Добавленный тест для UpdateStatus
+func (s *WebsiteServiceTestSuite) TestUpdateStatus() {
+	tests := []struct {
+		name    string
+		id      uuid.UUID
+		enabled bool
+		mock    func()
+		wantErr bool
+	}{
+		{
+			name:    "successful status update",
+			id:      uuid.New(),
+			enabled: false,
+			mock: func() {
+				updatedWebsite := domain.Website{
+					ID:      uuid.New(),
+					URL:     "https://exampleupdatestatus.com",
+					UserID:  uuid.New(),
+					Enabled: false,
+					Cron:    "0 * * * *",
+				}
+				s.mockRepo.On("UpdateStatusWebsite", s.ctx, mock.AnythingOfType("uuid.UUID"), false).
+					Return(updatedWebsite, nil).Once()
+			},
+			wantErr: false,
+		},
+	}
+
+	for _, tt := range tests {
+		s.Run(tt.name, func() {
+			tt.mock()
+			got, err := s.service.UpdateStatus(s.ctx, tt.id, tt.enabled)
+			if tt.wantErr {
+				s.Error(err)
+				return
+			}
+			s.NoError(err)
+			s.Equal(tt.enabled, got.Enabled)
+		})
+	}
+}
+
+// Добавленный тест для Delete
+func (s *WebsiteServiceTestSuite) TestDelete() {
+	tests := []struct {
+		name    string
+		id      uuid.UUID
+		mock    func()
+		wantErr bool
+	}{
+		{
+			name: "successful delete",
+			id:   uuid.New(),
+			mock: func() {
+				s.mockRepo.On("DeleteWebsite", s.ctx, mock.AnythingOfType("uuid.UUID")).
+					Return(nil).Once()
+			},
+			wantErr: false,
+		},
+		{
+			name: "delete error not found",
+			id:   uuid.New(),
+			mock: func() {
+				s.mockRepo.On("DeleteWebsite", s.ctx, mock.AnythingOfType("uuid.UUID")).
+					Return(errors.New("not found")).Once()
+			},
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		s.Run(tt.name, func() {
+			tt.mock()
+			err := s.service.Delete(s.ctx, tt.id)
+			if tt.wantErr {
+				s.Error(err)
+				return
+			}
+			s.NoError(err)
 		})
 	}
 }

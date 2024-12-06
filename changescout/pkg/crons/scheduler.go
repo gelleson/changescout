@@ -1,4 +1,3 @@
-// internal/app/crons/scheduler.go
 package crons
 
 import (
@@ -7,20 +6,16 @@ import (
 	"time"
 )
 
-// CronExpression represents a cron expression with validation and parsing capabilities
 type CronExpression string
 
-// Schedule defines the interface for cron scheduling operations
 type Schedule interface {
 	Next(t time.Time) time.Time
 }
 
-// Scheduler handles cron expression parsing and next execution time calculations
 type Scheduler struct {
 	parser cron.Parser
 }
 
-// NewScheduler creates a new Scheduler instance
 func NewScheduler() *Scheduler {
 	parser := cron.NewParser(
 		cron.SecondOptional |
@@ -36,12 +31,10 @@ func NewScheduler() *Scheduler {
 	}
 }
 
-// Parse parses a cron expression and returns a Schedule
 func (s *Scheduler) Parse(expr CronExpression) (Schedule, error) {
 	return s.parser.Parse(string(expr))
 }
 
-// Validate checks if a cron expression is valid
 func (s *Scheduler) Validate(expr CronExpression) error {
 	_, err := s.parser.Parse(string(expr))
 	if err != nil {
@@ -50,7 +43,6 @@ func (s *Scheduler) Validate(expr CronExpression) error {
 	return nil
 }
 
-// NextRun calculates the next execution time based on the cron expression
 func (s *Scheduler) NextRun(expr CronExpression, from time.Time) (time.Time, error) {
 	schedule, err := s.parser.Parse(string(expr))
 	if err != nil {
@@ -60,8 +52,11 @@ func (s *Scheduler) NextRun(expr CronExpression, from time.Time) (time.Time, err
 	return schedule.Next(from), nil
 }
 
-// NextNRuns returns the next n execution times
 func (s *Scheduler) NextNRuns(expr CronExpression, from time.Time, n int) ([]time.Time, error) {
+	if n < 1 {
+		return nil, fmt.Errorf("n must be greater than 0")
+	}
+
 	schedule, err := s.parser.Parse(string(expr))
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse cron expression: %w", err)
@@ -78,7 +73,6 @@ func (s *Scheduler) NextNRuns(expr CronExpression, from time.Time, n int) ([]tim
 	return times, nil
 }
 
-// IsOverdue checks if the next execution time has passed
 func (s *Scheduler) IsOverdue(expr CronExpression, lastRun, now time.Time) (bool, error) {
 	nextAfterLast, err := s.NextRun(expr, lastRun)
 	if err != nil {
@@ -87,7 +81,6 @@ func (s *Scheduler) IsOverdue(expr CronExpression, lastRun, now time.Time) (bool
 	return now.After(nextAfterLast), nil
 }
 
-// Common cron expression helpers
 func (s *Scheduler) EveryMinute() CronExpression {
 	return "* * * * *"
 }
