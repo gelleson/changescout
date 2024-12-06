@@ -1,0 +1,25 @@
+# codecov.yml
+version: 2
+coverage:
+  status:
+    project:
+      default:
+        target: 40%
+        threshold: 1%
+    patch:
+      default:
+        target: 80%
+        threshold: 1%
+  notify:
+    after_n_builds: 5
+
+comment:
+  layout: "reach, diff, flags, files, footer"
+  show_heatmap: true
+
+  # Customization of the heat map colors, optional settings
+  colors: {
+    high: "#007f7f",
+    medium: "#ffbf00",
+    low: "#ff0000"
+  }
