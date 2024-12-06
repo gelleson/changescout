@@ -23,6 +23,7 @@ import (
 	"github.com/gelleson/changescout/changescout/pkg/flags"
 	"github.com/labstack/echo/v4"
 	"github.com/urfave/cli/v2"
+	"go.uber.org/zap"
 	"log"
 	"net/http"
 )
@@ -46,10 +47,13 @@ var StartServer = &cli.Command{
 			logger.L("http"),
 			httpplatform.WithPort(clis.FlagsPort.Get(c)),
 		)
-		client := entrepo.Build(c.Context, &entrepo.BuildConfig{
+		client, err := entrepo.Build(c.Context, &entrepo.BuildConfig{
 			DBEngine: clis.FlagsDBEngine.Get(c),
 			DBURL:    clis.FlagsDBUrl.Get(c),
 		})
+		if err != nil {
+			log.Fatal("failed to open database connection", zap.Error(err))
+		}
 		server.WithMiddlewares(
 			logger.WithLogger(logger.L("http")),
 			middlewares.JWTAuth(middlewares.JWTAuthConfig{

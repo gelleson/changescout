@@ -13,6 +13,10 @@ import (
 )
 
 // UserRepository interface (should already exist from your previous code)
+//
+//go:generate mockery --name UserRepository
+type UserRepository interface {
+	GetByEmail(ctx cont
 type UserRepository interface {
 	GetByEmail(ctx context.Context, email string) (domain.User, error)
 	Create(ctx context.Context, user domain.User) (domain.User, error)

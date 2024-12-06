@@ -44,3 +44,11 @@ func TestHashPassword(t *testing.T) {
 	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(plainPassword))
 	assert.NoError(t, err, "Hashed password should match the plain password")
 }
+
+func TestHashPassword_InvalidCost(t *testing.T) {
+	plainPassword := "password123"
+	invalidCost := bcrypt.MaxCost + 1
+
+	_, err := HashPassword(plainPassword, invalidCost)
+	assert.Error(t, err, "Expected an error when using an invalid cost")
+}

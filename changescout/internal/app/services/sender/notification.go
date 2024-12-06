@@ -2,6 +2,7 @@ package sender
 
 import "github.com/gelleson/changescout/changescout/internal/domain"
 
+//go:generate mockery --name Sender
 type Sender interface {
 	Send(notification string, conf domain.Notification) error
 }
