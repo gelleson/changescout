@@ -20,6 +20,8 @@ type Setting struct {
 	UserAgent string      `json:"user_agent"`
 	Referer   string      `json:"referer"`
 	Method    string      `json:"method"`
+	// Template is a Go template to render notifications
+	Template *string `json:"template"`
 
 	// Selectors is a list of CSS selectors to extract text from the HTML content or xpath expressions to extract text from the XML content.
 	Selectors []string `json:"selectors"`

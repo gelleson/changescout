@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { gql, useMutation } from '@apollo/client';
 import { PROJECT_NAME } from '../../lib/utils';
+import { useToast } from "@/components/ui/use-toast";
 
 const SIGN_IN = gql`
   mutation SignIn($input: AuthSignInByPasswordInput!) {
@@ -41,22 +42,33 @@ export function SignIn() {
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm();
   const [signIn] = useMutation(SIGN_IN);
   const [quote, setQuote] = useState("");
+  const { toast } = useToast();
 
   useEffect(() => {
     const randomIndex = Math.floor(Math.random() * quotes.length);
     setQuote(quotes[randomIndex]);
   }, []);
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: any) => {
     try {
       const result = await signIn({ variables: { input: data } });
       if (result.data?.signInByPassword.success) {
         const token = result.data.signInByPassword.accessToken;
         localStorage.setItem('authToken', token);
         navigate('/dashboard');
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Invalid email or password",
+        });
       }
-    } catch (error) {
-      console.error('Sign in error:', error);
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "An error occurred during sign in",
+      });
     }
   };
 

@@ -54,21 +54,13 @@ func (r *mutationResolver) UpdateWebsite(ctx context.Context, input model.Websit
 	}
 
 	_site, err := r.WebsiteUseCase.Update(ctx, user.ID, site.ID, domain.Website{
-		ID:      site.ID,
-		Name:    diff.GetNewValueOrOldValue(input.Name, site.Name),
-		URL:     diff.GetNewValueOrOldValue(input.URL, site.URL),
-		Enabled: diff.GetNewValueOrOldValue(input.Enabled, site.Enabled),
-		Mode:    diff.GetNewValueOrOldValue(input.Mode, site.Mode),
-		Cron:    diff.GetNewValueOrOldValue(input.Cron, site.Cron),
-		Setting: buildSetting(&model.SettingInput{
-			UserAgent: transform.ToPtr(diff.GetNewValueOrOldValue(input.Setting.UserAgent, site.Setting.UserAgent)),
-			Selectors: diff.SliceDiffChecker(site.Setting.Selectors, input.Setting.Selectors),
-			Referer:   transform.ToPtr(diff.GetNewValueOrOldValue(input.Setting.Referer, site.Setting.Referer)),
-			Trim:      transform.ToPtr(diff.GetNewValueOrOldValue(input.Setting.Trim, site.Setting.Trim)),
-			Sort:      transform.ToPtr(diff.GetNewValueOrOldValue(input.Setting.Sort, site.Setting.Sort)),
-			JSONPath:  diff.SliceDiffChecker(site.Setting.JSONPath, input.Setting.JSONPath),
-			Method:    diff.GetNewValueOrOldValue(transform.ToPtr(input.Setting.Method), model.Method(site.Setting.Method)),
-		}),
+		ID:          site.ID,
+		Name:        diff.GetUpdatedValue(input.Name, site.Name),
+		URL:         diff.GetUpdatedValue(input.URL, site.URL),
+		Enabled:     diff.GetUpdatedValue(input.Enabled, site.Enabled),
+		Mode:        diff.GetUpdatedValue(input.Mode, site.Mode),
+		Cron:        diff.GetUpdatedValue(input.Cron, site.Cron),
+		Setting:     buildSetting(input.Setting),
 		UserID:      site.UserID,
 		LastCheckAt: site.LastCheckAt,
 	})

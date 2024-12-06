@@ -64,6 +64,7 @@ type SettingInput struct {
 	UserAgent     *string  `json:"user_agent,omitempty"`
 	Referer       *string  `json:"referer,omitempty"`
 	Method        Method   `json:"method"`
+	Template      *string  `json:"template,omitempty"`
 	Deduplication *bool    `json:"deduplication,omitempty"`
 	Trim          *bool    `json:"trim,omitempty"`
 	Sort          *bool    `json:"sort,omitempty"`
