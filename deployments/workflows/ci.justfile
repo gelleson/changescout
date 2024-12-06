@@ -11,6 +11,11 @@ coverage: tests
     @go tool cover -html=coverage.txt
 
 [no-cd]
+[doc("Show total test coverage")]
+coverage-total: tests
+    @go tool cover -func=coverage.txt | grep total
+
+[no-cd]
 [doc("Generate a coverage SVG visualization from the coverage profile")]
 coverage-svg: tests
     @$HOME/go/bin/go-cover-treemap -coverprofile coverage.txt > out.svg

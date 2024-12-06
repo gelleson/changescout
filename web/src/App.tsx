@@ -15,6 +15,7 @@ import { WebsiteDetailPage } from './pages/websites/WebsiteDetailPage';
 import { NotificationDetailPage } from './pages/notifications/NotificationDetailPage';
 import { AddNotificationPage } from './pages/notifications/AddNotificationPage';
 import { SnackbarProvider } from 'notistack';
+import { Toaster } from "@/components/ui/toaster";
 
 function App() {
 
@@ -22,30 +23,33 @@ function App() {
     <ApolloProvider client={client}>
       <SnackbarProvider maxSnack={3}>
         <BrowserRouter>
-          <Routes>
-            <Route path="/signin" element={<SignIn />} />
-            <Route path="/signup" element={<SignUp />} />
-            <Route path="/logout" element={<Logout />} />
-            <Route
-              path="/"
-              element={
-                <AuthGuard>
-                  <Layout />
-                </AuthGuard>
-              }
-            >
-              <Route index element={<Navigate to="/websites" replace />} />
-              <Route path="websites" element={<WebsitesPage />} />
-              <Route path="websites/new" element={<NewWebsitePage />} />
-              <Route path="websites/:id" element={<WebsiteDetailPage />} />
-              <Route path="websites/:id/edit" element={<EditWebsitePage />} />
-              <Route path="notifications" element={<NotificationsPage />} />
-              <Route path="notifications/new" element={<AddNotificationPage />} />
-              <Route path="notifications/:id" element={<NotificationDetailPage />} />
-              <Route path="notifications/:id/edit" element={<EditNotificationPage />} />
-              <Route path="*" element={<Navigate to="/websites" replace />} />
-            </Route>
-          </Routes>
+          <div>
+            <Routes>
+              <Route path="/signin" element={<SignIn />} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="/logout" element={<Logout />} />
+              <Route
+                path="/"
+                element={
+                  <AuthGuard>
+                    <Layout />
+                  </AuthGuard>
+                }
+              >
+                <Route index element={<Navigate to="/websites" replace />} />
+                <Route path="websites" element={<WebsitesPage />} />
+                <Route path="websites/new" element={<NewWebsitePage />} />
+                <Route path="websites/:id" element={<WebsiteDetailPage />} />
+                <Route path="websites/:id/edit" element={<EditWebsitePage />} />
+                <Route path="notifications" element={<NotificationsPage />} />
+                <Route path="notifications/new" element={<AddNotificationPage />} />
+                <Route path="notifications/:id" element={<NotificationDetailPage />} />
+                <Route path="notifications/:id/edit" element={<EditNotificationPage />} />
+                <Route path="*" element={<Navigate to="/websites" replace />} />
+              </Route>
+            </Routes>
+            <Toaster />
+          </div>
         </BrowserRouter>
       </SnackbarProvider>
     </ApolloProvider>

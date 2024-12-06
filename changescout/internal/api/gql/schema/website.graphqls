@@ -5,6 +5,7 @@ type Setting {
     user_agent: String
     referer: String
     method: String
+    template: String
     deduplication: Boolean
     trim: Boolean
     sort: Boolean
@@ -50,6 +51,7 @@ input SettingInput {
     user_agent: String
     referer: String
     method: Method!
+    template: String
     deduplication: Boolean
     trim: Boolean
     sort: Boolean

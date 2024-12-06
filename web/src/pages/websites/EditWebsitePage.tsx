@@ -15,13 +15,9 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-
-const CRON_PRESETS = {
-  '30min': '*/30 * * * *',
-  'hourly': '0 * * * *',
-  'daily': '0 0 * * *',
-  'custom': 'custom'
-} as const;
+import { TemplateMessage } from '@/components/templates/TemplateMessage';
+import { CRON_PRESETS } from '@/lib/constants';
+import { Textarea } from "@/components/ui/textarea";
 
 export function EditWebsitePage() {
   const navigate = useNavigate();
@@ -44,6 +40,7 @@ export function EditWebsitePage() {
       sort: false,
       selectors: [],
       json_path: [] as string[],
+      template: ''
     },
   });
 
@@ -320,6 +317,20 @@ export function EditWebsitePage() {
                       }
                     })}
                     placeholder="Enter JSON paths separated by commas"
+                  />
+                </div>
+
+                <div className="space-y-4">
+                  <Label htmlFor="template">Template Message</Label>
+                  <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                    <TemplateMessage />
+                  </div>
+                  <Textarea
+                    id="template"
+                    value={formData.setting.template || ''}
+                    onChange={(e) => setFormData({ ...formData, setting: { ...formData.setting, template: e.target.value } })}
+                    placeholder="Enter template text"
+                    className="min-h-[200px]"
                   />
                 </div>
               </AccordionContent>

@@ -4,6 +4,7 @@ import { gql, useMutation } from '@apollo/client';
 import { Link, useNavigate } from 'react-router-dom';
 import type { SignUpInput } from '../../types';
 import { PROJECT_NAME } from '../../lib/utils';
+import { useToast } from "@/components/ui/use-toast";
 
 const SIGN_UP = gql`
   mutation SignUp($input: AuthSignUpByPasswordInput!) {
@@ -39,6 +40,7 @@ const quotes = [
 
 export function SignUp() {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [quote, setQuote] = useState("");
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<SignUpInput>();
   const [signUp] = useMutation(SIGN_UP);
@@ -58,9 +60,19 @@ export function SignUp() {
         const token = result.data.signUpByPassword.accessToken;
         localStorage.setItem('authToken', token);
         navigate('/dashboard');
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to create account",
+        });
       }
-    } catch (error) {
-      console.error('Sign up error:', error);
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "An error occurred during sign up",
+      });
     }
   };
 
