@@ -37,6 +37,7 @@ ChangeScout is a web monitoring service that allows users to track changes on we
 - [ ] Mobile-responsive design
 - [ ] Role-based access control
 - [ ] Per-website notification settings
+- [ ] Lightweight browser rendering engine
 
 ### v0.3 - Monitoring Capabilities
 - [ ] Support more parsing modes
