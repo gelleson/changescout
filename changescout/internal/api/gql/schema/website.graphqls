@@ -70,6 +70,7 @@ input WebsiteCreateInput {
 
 enum Mode {
     plain
+    renderer
 }
 
 input WebsiteUpdateInput {

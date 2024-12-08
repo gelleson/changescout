@@ -9,6 +9,7 @@ import (
 	"github.com/gelleson/changescout/changescout/internal/api/gql/generated"
 	"github.com/gelleson/changescout/changescout/internal/app/services"
 	"github.com/gelleson/changescout/changescout/internal/app/services/diff"
+	http2 "github.com/gelleson/changescout/changescout/internal/app/services/requesters/http"
 	"github.com/gelleson/changescout/changescout/internal/app/usecases"
 	"github.com/gelleson/changescout/changescout/internal/app/usecases/auth"
 	"github.com/gelleson/changescout/changescout/internal/app/usecases/check"
@@ -66,7 +67,7 @@ func BuildHandler(conf *HandlerConfig) *Handler {
 							services.NewWebsiteService(
 								entrepo.NewWebsiteRepository(conf.Client),
 							),
-							services.NewHttpService(http.DefaultClient),
+							http2.New(http.DefaultClient),
 							services.NewCheckService(
 								entrepo.NewCheckRepository(conf.Client),
 							),

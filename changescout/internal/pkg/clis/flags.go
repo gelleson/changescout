@@ -58,4 +58,18 @@ var (
 		flags.WithCategory[time.Duration]("scheduler"),
 		flags.WithEnvVars[time.Duration]("CS_SCHEDULER_INTERVAL"),
 		flags.WithUsage[time.Duration]("The interval to check for due websites"))
+
+	FlagsBrowserManagedInstanceURL = flags.NewStringFlag("browser-managed-instance-url",
+		flags.WithCategory[string]("browser"),
+		flags.WithAlias[string]("bmiu"),
+		flags.WithDefaultValue[string]("ws://localhost:7317"),
+		flags.WithEnvVars[string]("CS_BROWSER_MANAGED_INSTANCE_URL"),
+		flags.WithUsage[string]("The managed instance url"))
+
+	FlagsBrowserDisable = flags.NewBoolFlag("browser-disable",
+		flags.WithCategory[bool]("browser"),
+		flags.WithAlias[bool]("bd"),
+		flags.WithDefaultValue[bool](false),
+		flags.WithEnvVars[bool]("CS_BROWSER_DISABLE"),
+		flags.WithUsage[bool]("Disable the browser"))
 )

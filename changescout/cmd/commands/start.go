@@ -10,6 +10,7 @@ import (
 	"github.com/gelleson/changescout/changescout/internal/api/http/middlewares"
 	"github.com/gelleson/changescout/changescout/internal/app/services"
 	"github.com/gelleson/changescout/changescout/internal/app/services/diff"
+	"github.com/gelleson/changescout/changescout/internal/app/services/requesters"
 	"github.com/gelleson/changescout/changescout/internal/app/services/sender"
 	"github.com/gelleson/changescout/changescout/internal/app/services/sender/providers/telegram"
 	"github.com/gelleson/changescout/changescout/internal/app/usecases"
@@ -20,12 +21,12 @@ import (
 	entrepo "github.com/gelleson/changescout/changescout/internal/infrastructure/database/ent"
 	"github.com/gelleson/changescout/changescout/internal/pkg/clis"
 	"github.com/gelleson/changescout/changescout/internal/platform/logger"
+	"github.com/gelleson/changescout/changescout/internal/utils/transform"
 	"github.com/gelleson/changescout/changescout/pkg/flags"
 	"github.com/labstack/echo/v4"
 	"github.com/urfave/cli/v2"
 	"go.uber.org/zap"
 	"log"
-	"net/http"
 )
 
 var StartServer = &cli.Command{
@@ -40,6 +41,8 @@ var StartServer = &cli.Command{
 		clis.FlagsBrokerEnabled,
 		clis.FlagsSchedulerEnabled,
 		clis.FlagsSchedulerInterval,
+		clis.FlagsBrowserManagedInstanceURL,
+		clis.FlagsBrowserDisable,
 	),
 	Action: func(c *cli.Context) error {
 		logger.SetLevel(clis.FlagsLogLevel.Get(c))
@@ -75,7 +78,14 @@ var StartServer = &cli.Command{
 					services.NewWebsiteService(
 						entrepo.NewWebsiteRepository(client),
 					),
-					services.NewHttpService(http.DefaultClient),
+					requesters.New(requesters.Options{
+						Browser: requesters.BrowserOption{
+							Enable: !clis.FlagsBrowserDisable.Get(c),
+							ManagedInstanceURL: transform.ToPtr(
+								clis.FlagsBrowserManagedInstanceURL.Get(c),
+							),
+						},
+					}),
 					services.NewCheckService(
 						entrepo.NewCheckRepository(client),
 					),

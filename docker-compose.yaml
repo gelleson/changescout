@@ -12,5 +12,8 @@ services:
     volumes:
       - changescout-data:/opt/changescout/data
 
+  changescout-chrome:
+    image: ghcr.io/go-rod/rod:v0.116.2
+
 volumes:
   changescout-data:
