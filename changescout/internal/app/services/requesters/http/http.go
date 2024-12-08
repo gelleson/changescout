@@ -1,4 +1,4 @@
-package services
+package http
 
 import (
 	"errors"
@@ -16,7 +16,7 @@ type HttpService struct {
 	doer Doer
 }
 
-func NewHttpService(doer Doer) *HttpService {
+func New(doer Doer) *HttpService {
 	return &HttpService{
 		doer: doer,
 	}

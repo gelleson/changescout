@@ -1,8 +1,8 @@
-package services_test
+package http_test
 
 import (
 	"errors"
-	"github.com/gelleson/changescout/changescout/internal/app/services"
+	http2 "github.com/gelleson/changescout/changescout/internal/app/services/requesters/http"
 	"github.com/stretchr/testify/mock"
 	"io/ioutil"
 	"net/http"
@@ -17,13 +17,13 @@ import (
 
 type HttpServiceSuite struct {
 	suite.Suite
-	httpService *services.HttpService
+	httpService *http2.HttpService
 	mockDoer    *mocks.Doer
 }
 
 func (suite *HttpServiceSuite) SetupTest() {
 	suite.mockDoer = new(mocks.Doer)
-	suite.httpService = services.NewHttpService(suite.mockDoer)
+	suite.httpService = http2.New(suite.mockDoer)
 }
 
 func (suite *HttpServiceSuite) TestRequest_ValidResponse() {

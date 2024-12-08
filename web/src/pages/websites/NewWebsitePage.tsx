@@ -67,7 +67,7 @@ export function NewWebsitePage() {
           input: formData
         }
       });
-      
+
       if (data?.createWebsite) {
         navigate(`/websites/${data.createWebsite.id}`);
       }
@@ -93,7 +93,7 @@ export function NewWebsitePage() {
               required
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="url">URL</Label>
             <Input
@@ -105,7 +105,7 @@ export function NewWebsitePage() {
               required
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="mode">Mode</Label>
             <Select
@@ -117,10 +117,11 @@ export function NewWebsitePage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="plain">HTML</SelectItem>
+                <SelectItem value="renderer">Google Chrome Renderer</SelectItem>
               </SelectContent>
             </Select>
           </div>
-          
+
           <div className="space-y-2">
             <Label>Check Frequency</Label>
             <RadioGroup
@@ -145,7 +146,7 @@ export function NewWebsitePage() {
                 <Label htmlFor="custom" className="font-normal">Custom schedule</Label>
               </div>
             </RadioGroup>
-            
+
             {cronType === 'custom' && (
               <div className="mt-4 space-y-2">
                 <Label htmlFor="custom-cron">Custom Cron Expression</Label>

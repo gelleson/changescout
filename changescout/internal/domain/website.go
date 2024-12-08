@@ -10,8 +10,8 @@ import (
 type Mode string
 
 const (
-	ModePlain Mode = "plain"
-	//ModeRenderer Mode = "renderer"
+	ModePlain    Mode = "plain"
+	ModeRenderer Mode = "renderer"
 )
 
 // Setting represents the options for a website. It can be used to configure the HTTP request, extract text from the response, and handle errors.
@@ -22,6 +22,8 @@ type Setting struct {
 	Method    string      `json:"method"`
 	// Template is a Go template to render notifications
 	Template *string `json:"template"`
+	// RenderedOption is setting for the rendered mode
+	RenderedOption RenderedOption `json:"rendered_option"`
 
 	// Selectors is a list of CSS selectors to extract text from the HTML content or xpath expressions to extract text from the XML content.
 	Selectors []string `json:"selectors"`
@@ -49,4 +51,12 @@ type Website struct {
 	UpdatedAt   time.Time            `json:"updated_at"`
 	LastCheckAt *time.Time           `json:"last_check_at"`
 	NextCheckAt *time.Time           `json:"next_check_at"`
+}
+
+// RenderedOption represents settings for the rendered mode.
+// The struct is used to configure options like waiting for selectors to appear and timeout intervals.
+type RenderedOption struct {
+	// WaitForTimeout specifies how long to wait for the selector (in seconds).
+	// This is beneficial to set a time frame after which the wait will timeout if the selector doesn’t appear.
+	WaitForTimeout *int `json:"wait_for_timeout"`
 }

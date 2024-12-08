@@ -37,6 +37,8 @@ FROM alpine:latest
 # Set the working directory
 WORKDIR /app
 
+RUN apk add --no-cache chromium
+
 # Copy only the built application binary from the builder stage
 COPY --from=builder /app/main ./
 
