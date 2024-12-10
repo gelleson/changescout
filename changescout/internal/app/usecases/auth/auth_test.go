@@ -3,13 +3,13 @@ package auth
 import (
 	"context"
 	"errors"
-	"github.com/gelleson/changescout/changescout/internal/app/usecases/auth/mocks"
-	"github.com/gelleson/changescout/changescout/internal/infrastructure/database"
-	"github.com/google/uuid"
 	"testing"
 	"time"
 
+	"github.com/gelleson/changescout/changescout/internal/app/usecases/auth/mocks"
 	"github.com/gelleson/changescout/changescout/internal/domain"
+	"github.com/gelleson/changescout/changescout/internal/infrastructure/database"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
@@ -18,7 +18,7 @@ import (
 type AuthUseCaseTestSuite struct {
 	suite.Suite
 	useCase      *UseCase
-	mockUserRepo *mocks.UserRepository
+	mockUserRepo *mocks.UserService
 	jwtSecret    []byte
 	ctx          context.Context
 	tokenExpiry  time.Duration
@@ -26,7 +26,7 @@ type AuthUseCaseTestSuite struct {
 
 // SetupTest sets up the environment for each test.
 func (suite *AuthUseCaseTestSuite) SetupTest() {
-	suite.mockUserRepo = new(mocks.UserRepository)
+	suite.mockUserRepo = new(mocks.UserService)
 	suite.jwtSecret = []byte("secret")
 	suite.tokenExpiry = time.Hour
 	suite.ctx = context.TODO()
@@ -64,14 +64,16 @@ func (suite *AuthUseCaseTestSuite) TestRegistrationByPassword_UserAlreadyExists(
 	suite.mockUserRepo.AssertExpectations(suite.T())
 }
 
-// Test case for successful user registration
-func (suite *AuthUseCaseTestSuite) TestRegistrationByPassword_Success() {
+// Test case for successful user registration with role fetching
+func (suite *AuthUseCaseTestSuite) TestRegistrationByPassword_SuccessWithRole() {
 	email := "newuser@example.com"
 	password := "password"
-	user := domain.User{FirstName: "John", LastName: "Doe", Email: email, Password: password}
+	role := domain.RoleUser
+	user := domain.User{FirstName: "John", LastName: "Doe", Email: email, Password: password, Role: role}
 
 	suite.mockUserRepo.On("GetByEmail", suite.ctx, email).Return(domain.User{}, database.ErrEntityNotFound)
 	suite.mockUserRepo.On("Create", suite.ctx, mock.AnythingOfType("domain.User")).Return(user, nil)
+	suite.mockUserRepo.On("GetRole", suite.ctx).Return(role, nil)
 
 	token, err := suite.useCase.RegistrationByPassword(suite.ctx, "John", "Doe", email, password)
 
