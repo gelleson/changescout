@@ -8,7 +8,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-//go:generate mockery --name UserRepository 
+//go:generate mockery --name UserRepository
 type UserRepository interface {
 	database.UserRepository
 }
@@ -38,4 +38,18 @@ func (u UserService) Create(ctx context.Context, user domain.User) (domain.User,
 	}
 	user.Password = string(password)
 	return u.userRepository.CreateUser(ctx, user)
+}
+
+// GetRole determines the role based on the number of users in the system.
+// If there are no users, it assigns the RoleAdmin to the first user.
+// Otherwise, it assigns the RoleUser.
+func (u UserService) GetRole(ctx context.Context) (domain.Role, error) {
+	total, err := u.userRepository.GetTotalUsers(ctx)
+	if err != nil {
+		return domain.RoleUser, err
+	}
+	if total == 0 {
+		return domain.RoleAdmin, nil
+	}
+	return domain.RoleUser, nil
 }

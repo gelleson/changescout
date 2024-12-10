@@ -26,6 +26,13 @@ var (
 		flags.WithEnvVars[string]("CS_JWT_SECRET"),
 		flags.WithUsage[string]("The secret to use for JWT"))
 
+	FlagsSecretExpiration = flags.NewDurationFlag("secret-expiration",
+		flags.WithDefaultValue[time.Duration](time.Hour*24),
+		flags.WithAlias[time.Duration]("se"),
+		flags.WithCategory[time.Duration]("security"),
+		flags.WithEnvVars[time.Duration]("CS_SECRET_EXPIRATION"),
+		flags.WithUsage[time.Duration]("The expiration of the secret"))
+
 	FlagsDBUrl = flags.NewStringFlag("db-url",
 		flags.WithDefaultValue[string](":memory:?_pragma=foreign_keys(1)"),
 		flags.WithAlias[string]("d"),

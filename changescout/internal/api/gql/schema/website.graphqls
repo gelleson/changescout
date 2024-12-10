@@ -23,7 +23,6 @@ type Website {
     cron: CronExpression!
     setting: Setting
 }
-directive @isAuthenticated on FIELD_DEFINITION
 
 extend type Query {
     getWebsiteByID(id: ID!): Website @isAuthenticated

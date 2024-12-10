@@ -1,3 +1,11 @@
+enum Role {
+    ADMIN
+    USER
+}
+
+directive @isAuthenticated on FIELD_DEFINITION
+directive @hasRole(role: [Role!]) on FIELD_DEFINITION
+
 extend type Mutation {
     signInByPassword(input: AuthSignInByPasswordInput): AuthStatus
     signUpByPassword(input: AuthSignUpByPasswordInput): AuthStatus

@@ -22,9 +22,9 @@ func NewUserRepository(client *ent.Client) *UserRepository {
 
 func roleDomainToEnt(role domain.Role) user.Role {
 	switch role {
-	case domain.Admin:
+	case domain.RoleAdmin:
 		return user.RoleAdmin
-	case domain.Regular:
+	case domain.RoleUser:
 		return user.RoleUser
 	default:
 		panic("invalid role")
@@ -34,9 +34,9 @@ func roleDomainToEnt(role domain.Role) user.Role {
 func entToRoleDomain(role user.Role) domain.Role {
 	switch role {
 	case user.RoleAdmin:
-		return domain.Admin
+		return domain.RoleAdmin
 	case user.RoleUser:
-		return domain.Regular
+		return domain.RoleUser
 	default:
 		panic("invalid role")
 	}
@@ -134,4 +134,8 @@ func (u UserRepository) UpdateUser(ctx context.Context, user domain.User) error 
 	_, err := _user.Save(ctx)
 
 	return err
+}
+
+func (u UserRepository) GetTotalUsers(ctx context.Context) (int, error) {
+	return u.client.User.Query().Count(ctx)
 }

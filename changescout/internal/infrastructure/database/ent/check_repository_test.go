@@ -36,7 +36,7 @@ func (s *CheckRepositoryTestSuite) SetupTest() {
 	// Create a test user
 	user := domain.User{
 		Email:     "test@example.com",
-		Role:      domain.Regular,
+		Role:      domain.RoleUser,
 		IsActive:  true,
 		Password:  "password",
 		FirstName: "Test",

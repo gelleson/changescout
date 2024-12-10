@@ -19,7 +19,7 @@ func getUserID(client *ent.Client) uuid.UUID {
 	if err := faker.FakeData(&usr); err != nil {
 		panic(err)
 	}
-	usr.Role = domain.Regular
+	usr.Role = domain.RoleUser
 
 	user, err := NewUserRepository(client).CreateUser(context.Background(), usr)
 	if err != nil {

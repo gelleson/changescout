@@ -19,6 +19,7 @@ var (
 type AuthClaims struct {
 	jwt.RegisteredClaims `json:"inline"`
 	ID                   uuid.UUID `json:"id"`
+	Role                 Role      `json:"role"`
 	Email                string    `json:"email"`
 	ExpiresAt            time.Time `json:"exp"`
 }
