@@ -40,7 +40,7 @@ func (suite *AuthUseCaseTestSuite) TestAuthenticateByPassword_InvalidCredentials
 	hashedPassword := "correctHash"
 
 	suite.mockUserRepo.On("GetByEmail", suite.ctx, email).Return(domain.User{Email: email, Password: hashedPassword}, nil)
-	authpkg := new(mocks.UserRepository)
+	authpkg := new(mocks.UserService)
 	authpkg.On("CheckPassword", hashedPassword, wrongPassword).Return(errors.New("invalid credentials"))
 
 	_, err := suite.useCase.AuthenticateByPassword(suite.ctx, email, wrongPassword)
