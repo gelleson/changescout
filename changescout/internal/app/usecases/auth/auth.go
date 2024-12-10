@@ -12,8 +12,6 @@ import (
 	"github.com/gelleson/changescout/changescout/internal/domain"
 )
 
-// UserService interface (should already exist from your previous code)
-//
 //go:generate mockery --name UserService
 type UserService interface {
 	GetByEmail(ctx context.Context, email string) (domain.User, error)
