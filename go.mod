@@ -11,6 +11,7 @@ require (
 	github.com/garsue/watermillzap v1.2.0
 	github.com/glebarez/go-sqlite v1.22.0
 	github.com/go-faker/faker/v4 v4.5.0
+	github.com/go-rod/rod v0.116.2
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/google/uuid v1.6.0
 	github.com/labstack/echo/v4 v4.12.0
@@ -37,7 +38,6 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/go-openapi/inflect v0.19.0 // indirect
-	github.com/go-rod/rod v0.116.2 // indirect
 	github.com/go-viper/mapstructure/v2 v2.2.1 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/google/go-cmp v0.6.0 // indirect

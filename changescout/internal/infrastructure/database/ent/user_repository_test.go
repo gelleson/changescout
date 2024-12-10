@@ -40,7 +40,7 @@ func (s *UserRepositoryTestSuite) TestCreateUser() {
 				LastName:  "Doe",
 				Email:     "john@example.com",
 				Password:  "hashedpassword",
-				Role:      domain.Regular,
+				Role:      domain.RoleUser,
 				IsActive:  true,
 			},
 			wantErr: false,
@@ -48,11 +48,11 @@ func (s *UserRepositoryTestSuite) TestCreateUser() {
 		{
 			name: "create admin user",
 			user: domain.User{
-				FirstName: "Admin",
+				FirstName: "RoleAdmin",
 				LastName:  "User",
 				Email:     "admin@example.com",
 				Password:  "hashedpassword",
-				Role:      domain.Admin,
+				Role:      domain.RoleAdmin,
 				IsActive:  true,
 			},
 			wantErr: false,
@@ -64,7 +64,7 @@ func (s *UserRepositoryTestSuite) TestCreateUser() {
 				LastName:  "User",
 				Email:     "john@example.com", // Same as first test case
 				Password:  "hashedpassword",
-				Role:      domain.Regular,
+				Role:      domain.RoleUser,
 				IsActive:  true,
 			},
 			wantErr: true,
@@ -100,7 +100,7 @@ func (s *UserRepositoryTestSuite) TestGetUserByID() {
 		LastName:  "Doe",
 		Email:     "john@example.com",
 		Password:  "hashedpassword",
-		Role:      domain.Regular,
+		Role:      domain.RoleUser,
 		IsActive:  true,
 	}
 
@@ -146,7 +146,7 @@ func (s *UserRepositoryTestSuite) TestGetUserByEmail() {
 		LastName:  "Doe",
 		Email:     "john@example.com",
 		Password:  "hashedpassword",
-		Role:      domain.Regular,
+		Role:      domain.RoleUser,
 		IsActive:  true,
 	}
 
@@ -192,7 +192,7 @@ func (s *UserRepositoryTestSuite) TestUpdateUser() {
 		LastName:  "Doe",
 		Email:     "john@example.com",
 		Password:  "hashedpassword",
-		Role:      domain.Regular,
+		Role:      domain.RoleUser,
 		IsActive:  true,
 	}
 
@@ -233,11 +233,11 @@ func (s *UserRepositoryTestSuite) TestUpdateUser() {
 			name: "update role",
 			update: domain.User{
 				ID:   created.ID,
-				Role: domain.Admin,
+				Role: domain.RoleAdmin,
 			},
 			wantErr: false,
 			verify: func(t assert.TestingT, u domain.User) {
-				assert.Equal(t, domain.Admin, u.Role)
+				assert.Equal(t, domain.RoleAdmin, u.Role)
 			},
 		},
 		{
@@ -277,12 +277,12 @@ func (s *UserRepositoryTestSuite) TestRoleConversion() {
 	}{
 		{
 			name:     "admin role",
-			domain:   domain.Admin,
+			domain:   domain.RoleAdmin,
 			expected: user.RoleAdmin,
 		},
 		{
 			name:     "regular role",
-			domain:   domain.Regular,
+			domain:   domain.RoleUser,
 			expected: user.RoleUser,
 		},
 	}
@@ -297,4 +297,34 @@ func (s *UserRepositoryTestSuite) TestRoleConversion() {
 			assert.Equal(s.T(), tt.domain, domainRole)
 		})
 	}
+}
+
+func (s *CheckRepositoryTestSuite) TestGetTotalUsers() {
+	// Ensure that the test user is created in SetupTest
+
+	// Get the total number of users
+	count, err := s.userRepo.GetTotalUsers(s.ctx)
+	assert.NoError(s.T(), err)
+
+	// Check that the number of users is at least 1 (since SetupTest adds one user)
+	assert.GreaterOrEqual(s.T(), count, 1)
+
+	// Additional checks can be added by creating more users
+	// Create an additional test user
+	newUser := domain.User{
+		Email:     "newuser@example.com",
+		Role:      domain.RoleUser,
+		IsActive:  true,
+		Password:  "password",
+		FirstName: "New",
+		LastName:  "User",
+	}
+
+	_, err = s.userRepo.CreateUser(s.ctx, newUser)
+	assert.NoError(s.T(), err)
+
+	// Check the user count again
+	count, err = s.userRepo.GetTotalUsers(s.ctx)
+	assert.NoError(s.T(), err)
+	assert.GreaterOrEqual(s.T(), count, 2)
 }

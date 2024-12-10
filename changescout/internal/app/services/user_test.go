@@ -176,3 +176,53 @@ func (s *UserServiceTestSuite) TestCreate() {
 		})
 	}
 }
+
+func (s *UserServiceTestSuite) TestGetRole() {
+	tests := []struct {
+		name    string
+		mock    func()
+		want    domain.Role
+		wantErr bool
+	}{
+		{
+			name: "first user should be admin",
+			mock: func() {
+				s.mockRepo.On("GetTotalUsers", s.ctx).Once().
+					Return(0, nil)
+			},
+			want:    domain.RoleAdmin,
+			wantErr: false,
+		},
+		{
+			name: "subsequent user should be regular user",
+			mock: func() {
+				s.mockRepo.On("GetTotalUsers", s.ctx).Once().
+					Return(1, nil)
+			},
+			want:    domain.RoleUser,
+			wantErr: false,
+		},
+		{
+			name: "error retrieving total users",
+			mock: func() {
+				s.mockRepo.On("GetTotalUsers", s.ctx).Once().
+					Return(0, errors.New("error getting total users"))
+			},
+			want:    domain.RoleUser, // Default role on error
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		s.Run(tt.name, func() {
+			tt.mock()
+			got, err := s.service.GetRole(s.ctx)
+			if tt.wantErr {
+				s.Error(err)
+				return
+			}
+			s.NoError(err)
+			s.Equal(tt.want, got)
+		})
+	}
+}

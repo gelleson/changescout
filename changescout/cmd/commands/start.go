@@ -36,6 +36,7 @@ var StartServer = &cli.Command{
 		clis.FlagsLogLevel,
 		clis.FlagsPort,
 		clis.FlagsSecret,
+		clis.FlagsSecretExpiration,
 		clis.FlagsDBUrl,
 		clis.FlagsDBEngine,
 		clis.FlagsBrokerEnabled,
@@ -137,8 +138,9 @@ var StartServer = &cli.Command{
 		}
 
 		ghandler := gql.BuildHandler(&gql.HandlerConfig{
-			Secret: clis.FlagsSecret.Get(c),
-			Client: client,
+			Secret:           clis.FlagsSecret.Get(c),
+			SecretExpiration: clis.FlagsSecretExpiration.Get(c),
+			Client:           client,
 		})
 		server.Register("POST", "/query", func(c echo.Context) error {
 			ghandler.Schema().ServeHTTP(c.Response(), c.Request())

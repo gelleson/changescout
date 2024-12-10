@@ -1,11 +1,9 @@
 package gql
 
 import (
-	"context"
-	"errors"
-	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/gelleson/changescout/changescout/internal/api/gql/directive"
 	"github.com/gelleson/changescout/changescout/internal/api/gql/generated"
 	"github.com/gelleson/changescout/changescout/internal/app/services"
 	"github.com/gelleson/changescout/changescout/internal/app/services/diff"
@@ -15,15 +13,14 @@ import (
 	"github.com/gelleson/changescout/changescout/internal/app/usecases/check"
 	entrepo "github.com/gelleson/changescout/changescout/internal/infrastructure/database/ent"
 	"github.com/gelleson/changescout/changescout/internal/infrastructure/database/ent/ent"
-	"github.com/gelleson/changescout/changescout/internal/pkg/contexts"
-	"github.com/google/uuid"
 	"net/http"
 	"time"
 )
 
 type HandlerConfig struct {
-	Secret string
-	Client *ent.Client
+	Secret           string
+	SecretExpiration time.Duration
+	Client           *ent.Client
 }
 
 type Handler struct {
@@ -58,7 +55,7 @@ func BuildHandler(conf *HandlerConfig) *Handler {
 								entrepo.NewUserRepository(conf.Client),
 							),
 							[]byte(conf.Secret),
-							time.Hour*24,
+							conf.SecretExpiration,
 						),
 						NotificationService: services.NewNotificationService(
 							entrepo.NewNotificationRepository(conf.Client),
@@ -75,16 +72,8 @@ func BuildHandler(conf *HandlerConfig) *Handler {
 						),
 					},
 					Directives: generated.DirectiveRoot{
-						IsAuthenticated: func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error) {
-							user, isAuthenticated := contexts.UserContext(ctx)
-							if !isAuthenticated {
-								return nil, errors.New("not authenticated")
-							}
-							if user.ID == uuid.Nil {
-								return nil, errors.New("not authenticated")
-							}
-							return next(ctx)
-						},
+						IsAuthenticated: directive.IsAuth(),
+						HasRole:         directive.HasRole(),
 					},
 				},
 			),

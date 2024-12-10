@@ -1,5 +1,5 @@
 #!/usr/bin/env just --justfile
-args := "-v $(go list ./... | grep -v 'ent/ent' | grep -v 'gql/' | grep -v 'mocks/' | grep -v '**/cmd/*' | grep -v '**/internal/api/' )"
+args := "$(go list ./... | grep -v 'ent/ent' | grep -v 'gql/' | grep -v 'mocks/' | grep -v '**/cmd/*' | grep -v '**/internal/api/' )"
 output := "-coverprofile coverage.txt"
 
 [no-cd]
