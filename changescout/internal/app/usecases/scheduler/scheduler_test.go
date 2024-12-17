@@ -6,6 +6,7 @@ import (
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/gelleson/changescout/changescout/internal/app/usecases/scheduler/mocks"
 	"github.com/gelleson/changescout/changescout/internal/domain"
+	"github.com/gelleson/changescout/changescout/pkg/tests"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -34,6 +35,7 @@ func (s *UseCaseTestSuite) SetupTest() {
 	s.useCase.checkInterval = 100 * time.Millisecond
 	ctx, _ := context.WithTimeout(context.Background(), 250*time.Millisecond)
 	s.ctx = ctx
+	s.useCase.logger = tests.TestLogger(s.T())
 
 	s.testWebsites = []domain.Website{
 		{
