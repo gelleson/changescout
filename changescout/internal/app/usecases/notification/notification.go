@@ -2,6 +2,7 @@ package notification
 
 import (
 	"context"
+	"github.com/gelleson/changescout/changescout/internal/app/services/diff"
 	"github.com/gelleson/changescout/changescout/internal/domain"
 	"github.com/gelleson/changescout/changescout/internal/infrastructure/database"
 	"github.com/gelleson/changescout/changescout/internal/pkg/templates"
@@ -16,9 +17,7 @@ type data struct {
 	Mode        domain.Mode
 	URL         string
 	LastChecked string
-	DiffStart   string
-	Diff        string
-	DiffEnd     string
+	Result      diff.Result
 }
 
 //go:generate mockery --name Sender
@@ -78,7 +77,7 @@ func (c UseCase) NotifyChanges(ctx context.Context, siteID uuid.UUID, change dom
 		Mode:        site.Mode,
 		URL:         site.URL,
 		LastChecked: c.now.Now().Format("2006-01-02 15:04:05"),
-		Diff:        diffWithColor.Replace(change.Check.Diff),
+		Result:      change.Check,
 	}
 
 	var msg strings.Builder
@@ -91,8 +90,9 @@ func (c UseCase) NotifyChanges(ctx context.Context, siteID uuid.UUID, change dom
 		UserID:    &site.UserID,
 	}, domain.Pagination{})
 
+	text := msg.String()
 	for _, conf := range senders {
-		if err := c.sender.Send(msg.String(), conf); err != nil {
+		if err := c.sender.Send(text, conf); err != nil {
 			return err
 		}
 	}
