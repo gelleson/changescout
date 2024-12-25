@@ -121,27 +121,21 @@ func (s *Service) compareText(previous, current []byte) (Result, error) {
 			}
 			switch diff.Type {
 			case diffmatchpatch.DiffInsert:
-				buf.WriteString("+ ")
 				buf.WriteString(line)
-				buf.WriteString("\n")
 				changes = append(changes, Change{
 					Type:    Added,
 					Content: diff.Text,
 				})
 				changedLen += float64(len(diff.Text))
 			case diffmatchpatch.DiffDelete:
-				buf.WriteString("- ")
 				buf.WriteString(line)
-				buf.WriteString("\n")
 				changes = append(changes, Change{
 					Type:    Removed,
 					Content: diff.Text,
 				})
 				changedLen += float64(len(diff.Text))
 			case diffmatchpatch.DiffEqual:
-				buf.WriteString("  ")
 				buf.WriteString(line)
-				buf.WriteString("\n")
 			}
 		}
 	}
@@ -215,7 +209,6 @@ func (s *Service) renderHTMLDiff(buf *strings.Builder, indent string, node1, nod
 	}
 
 	if node1 == nil {
-		buf.WriteString("+ ")
 		buf.WriteString(indent)
 		buf.WriteString(s.formatNode(node2))
 		buf.WriteString("\n")

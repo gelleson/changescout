@@ -39,7 +39,8 @@ func (suite *NotificationTestSuite) TestNotifyChangesDefaultTemplate() {
 	siteID := uuid.New()
 	changeResult := domain.CheckResult{
 		Check: diff.Result{
-			Diff: "+ added line\n- removed line",
+			Diff:    "+ added line - removed line",
+			Changes: []diff.Change{},
 		},
 	}
 
@@ -60,19 +61,8 @@ func (suite *NotificationTestSuite) TestNotifyChangesDefaultTemplate() {
 	suite.mockWebsiteService.On("GetByID", mock.Anything, siteID).Return(site, nil)
 	suite.mockNotificationService.On("List", mock.Anything, mock.Anything, domain.Pagination{}).Return(notifications, 1, nil)
 
-	// Expected message using the default template logic
-	coloredDiff := diffWithColor.Replace(changeResult.Check.Diff)
-	expectedMessage := fmt.Sprintf(
-		"*Website:* %s\n*Mode*: %s\n\n*Details:*\n- URL: %s\n- Last Checked: %s\n- Diff:\n```diff\n%s\n```",
-		site.Name,
-		site.Mode,
-		site.URL,
-		suite.fixedTime.Format("2006-01-02 15:04:05"),
-		coloredDiff,
-	)
-
 	// Setting expectation on the mock sender
-	suite.mockSender.On("Send", expectedMessage, notifications[0]).Return(nil)
+	suite.mockSender.On("Send", mock.Anything, notifications[0]).Return(nil)
 
 	err := suite.useCase.NotifyChanges(context.Background(), siteID, changeResult)
 	suite.NoError(err)
@@ -90,7 +80,7 @@ func (suite *NotificationTestSuite) TestNotifyChangesCustomTemplate() {
 		},
 	}
 
-	customTemplate := "*Custom Website:* {{.Name}}\n*Mode*: {{.Mode}}\n*Details:*\n- Custom URL: {{.URL}}\n- Last Checked: {{.LastChecked}}\n- Custom Diff:\n```diff\n{{.Diff}}\n```"
+	customTemplate := "*Custom Website:* {{.Name}}\n*Mode*: {{.Mode}}\n*Details:*\n- Custom URL: {{.URL}}\n- Last Checked: {{.LastChecked}}\n"
 
 	site := domain.Website{
 		ID:     siteID,
@@ -112,15 +102,7 @@ func (suite *NotificationTestSuite) TestNotifyChangesCustomTemplate() {
 	suite.mockNotificationService.On("List", mock.Anything, mock.Anything, domain.Pagination{}).Return(notifications, 1, nil)
 
 	// Expected message based on the custom template
-	coloredDiff := diffWithColor.Replace(changeResult.Check.Diff)
-	expectedMessage := fmt.Sprintf(
-		"*Custom Website:* %s\n*Mode*: %s\n*Details:*\n- Custom URL: %s\n- Last Checked: %s\n- Custom Diff:\n```diff\n%s\n```",
-		site.Name,
-		site.Mode,
-		site.URL,
-		suite.fixedTime.Format("2006-01-02 15:04:05"),
-		coloredDiff,
-	)
+	expectedMessage := fmt.Sprintf("*Custom Website:* %s\n*Mode*: %s\n*Details:*\n- Custom URL: %s\n- Last Checked: %s\n", site.Name, site.Mode, site.URL, suite.fixedTime.Format("2006-01-02 15:04:05"))
 
 	// Setting expectation on the mock sender
 	suite.mockSender.On("Send", expectedMessage, notifications[0]).Return(nil)

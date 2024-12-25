@@ -1,10 +1,3 @@
-*Website:* {{.Name}}
-*Mode*: {{.Mode}}
-
-*Details:*
-- URL: {{.URL}}
-- Last Checked: {{.LastChecked}}
-- Diff:
-```diff
-{{.Diff}}
-```
+🌐 {{.Name}} ({{.Mode}})
+🔗 {{.URL}} | ⏱ {{.LastChecked}} {{"\n"}}
+{{- range .Result.Changes }} ({{.Type }}): {{.Content}}{{"\n"}}{{- end }}
